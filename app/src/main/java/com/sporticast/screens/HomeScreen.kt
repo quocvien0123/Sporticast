@@ -54,7 +54,7 @@ fun HomeScreen(navController: NavController) {
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Image(
-                        painter = painterResource(id = R.mipmap.ic_launcher_round),
+                        painter = painterResource(id = R.drawable.ic_launcher_round),
                         contentDescription = "App Icon",
                         modifier = Modifier
                             .size(40.dp)
