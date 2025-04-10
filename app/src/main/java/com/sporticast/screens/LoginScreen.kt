@@ -111,7 +111,7 @@ fun LoginScreen(navController: NavController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate("homeScreen") },
+                onClick = { },
                 modifier = Modifier.width(150.dp),
                 shape = RoundedCornerShape(15.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -119,7 +119,12 @@ fun LoginScreen(navController: NavController) {
                     contentColor = Color.White
                 )
             ) {
-                Text("Login", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                Text("Login",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.clickable {
+                    navController.navigate("homeScreen")
+                })
             }
 
             Spacer(modifier = Modifier.height(24.dp))

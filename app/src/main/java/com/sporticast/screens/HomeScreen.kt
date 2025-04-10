@@ -37,7 +37,7 @@ fun HomeScreen(navController: NavController) {
     val categories by viewModel.categories.collectAsState()
     val featuredBooks by viewModel.featuredBooks.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    
+
     var showProfileMenu by remember { mutableStateOf(false) }
     var showNotificationMenu by remember { mutableStateOf(false) }
 
@@ -93,7 +93,7 @@ fun HomeScreen(navController: NavController) {
                         )
                     }
                 }
-                
+
                 Box {
                     IconButton(onClick = { showProfileMenu = true }) {
                         Icon(
@@ -138,7 +138,7 @@ fun HomeScreen(navController: NavController) {
                                     tint = Color.White
                                 )
                             },
-                            onClick = { 
+                            onClick = {
                                 showProfileMenu = false
                                 navController.navigate("login") {
                                     popUpTo(navController.graph.startDestinationId) {
@@ -193,7 +193,7 @@ fun HomeScreen(navController: NavController) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
-                
+
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -204,7 +204,7 @@ fun HomeScreen(navController: NavController) {
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
@@ -299,9 +299,9 @@ fun FeaturedContentItem(
                     modifier = Modifier.size(40.dp)
                 )
             }
-            
+
             Spacer(modifier = Modifier.width(16.dp))
-            
+
             Column(
                 modifier = Modifier.weight(1f)
             ) {
