@@ -1,4 +1,3 @@
-
 package com.sporticast
 
 import android.os.Bundle
@@ -8,10 +7,10 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.sporticast.Screens.HomeScreen
-import com.sporticast.Screens.LoginScreen
-import com.sporticast.Screens.RegisterScreen
-import com.sporticast.Screens.WelcomeScreen
+import com.sporticast.screens.HomeScreen
+import com.sporticast.screens.LoginScreen
+import com.sporticast.screens.RegisterScreen
+import com.sporticast.screens.WelcomeScreen
 
 
 class MainActivity : ComponentActivity() {
@@ -29,7 +28,9 @@ fun AppNavigator() {
     NavHost(navController, startDestination = "welcomeScreen") {
         composable("login") { LoginScreen(navController) }
         composable("register") { RegisterScreen(navController) }
-        composable("homeScreen") { HomeScreen() }
-        composable ("welcomeScreen"){ WelcomeScreen(navController) }
+        composable("homeScreen") { HomeScreen(navController) }
+        composable("welcomeScreen") { WelcomeScreen(navController) }
     }
 }
+
+
