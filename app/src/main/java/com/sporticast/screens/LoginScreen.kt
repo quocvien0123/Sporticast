@@ -27,19 +27,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.R
+import com.sporticast.ui.theme.colorLg_Rg
 
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val backgroundGradient = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF08191f),
-            Color(0xFF152e3a),
-            Color(0xFF1f3e52)
-        )
-    )
+    val backgroundGradient = Brush.verticalGradient(colors = colorLg_Rg)
 
     Box(
         modifier = Modifier

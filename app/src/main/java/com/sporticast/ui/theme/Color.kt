@@ -10,15 +10,13 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
-val gradient = listOf(
-    Color(0xFF08191f),
-    Color(0xFF1A1A1A)
-)
 
-    val colors = listOf(
+
+val colorLg_Rg = listOf(
         Color(0xFF08191f),
-        Color(0xFF1A1A1A)
-    )
+        Color(0xFF152e3a),
+        Color(0xFF1f3e52)
+)
 
 
 // Sử dụng gradient trong Compose:

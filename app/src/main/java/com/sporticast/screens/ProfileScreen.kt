@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.screens.home.BottomNavigationBar
-import com.sporticast.ui.theme.gradient
+import com.sporticast.ui.theme.colorLg_Rg
 
 @Composable
 fun ProfileScreen(navController: NavController) {
@@ -35,7 +35,7 @@ fun ProfileScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(colors = gradient))
+                .background(Brush.verticalGradient(colors = colorLg_Rg))
                 .padding(horizontal = 16.dp)
                 .padding(top = 24.dp)
                 .padding(innerPadding)

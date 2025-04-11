@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.R
-import com.sporticast.ui.theme.gradient
+import com.sporticast.ui.theme.colorLg_Rg
 
 @Composable
 fun WelcomeScreen(navController: NavController) {
@@ -33,7 +33,7 @@ fun WelcomeScreen(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(colors = gradient))
+            .background(Brush.verticalGradient(colors = colorLg_Rg))
     ) {
         Column(
             modifier = Modifier

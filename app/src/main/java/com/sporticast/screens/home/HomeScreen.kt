@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.sporticast.ui.theme.gradient
+import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,6 +27,8 @@ fun HomeScreen(navController: NavController) {
 
     var showProfileMenu by remember { mutableStateOf(false) }
     var showNotificationMenu by remember { mutableStateOf(false) }
+    var showSettingsMenu by remember { mutableStateOf(false) }
+
 
     Scaffold(
         bottomBar = {
@@ -38,19 +40,22 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .background(Brush.verticalGradient(colors = gradient))
+                .background(Brush.verticalGradient(colors = colorLg_Rg))
         ) {
             HomeTopBar(
                 showProfileMenu = showProfileMenu,
                 showNotificationMenu = showNotificationMenu,
+                showSettingsMenu = showSettingsMenu,
                 onProfileMenuChange = { showProfileMenu = it },
                 onNotificationMenuChange = { showNotificationMenu = it },
+                onSettingsMenuChange = { showSettingsMenu = it },
                 onLogout = {
                     navController.navigate("login") {
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
                 }
             )
+
 
             SearchBar(searchQuery) { viewModel.onSearchQueryChanged(it) }
 
