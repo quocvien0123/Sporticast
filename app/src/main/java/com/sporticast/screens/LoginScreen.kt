@@ -1,9 +1,8 @@
 package com.sporticast.screens
 
-
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -28,120 +27,165 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.R
-import com.sporticast.ui.theme.gradient
-
 
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    val backgroundGradient = Brush.verticalGradient(
+        colors = listOf(
+            Color(0xFF08191f),
+            Color(0xFF152e3a),
+            Color(0xFF1f3e52)
+        )
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Brush.verticalGradient(colors = gradient)),
+            .background(backgroundGradient),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .background(
+                    color = Color.White.copy(alpha = 0.05f),
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .border(
+                    width = 1.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            Color.White.copy(alpha = 0.3f),
+                            Color.Transparent
+                        )
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                )
+                .padding(24.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_round),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color(0xFF064635))) {
-                        append("Sposti")
-                    }
-                    withStyle(style = SpanStyle(color = Color.White)) {
-                        append("Cash")
-                    }
-                },
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(100.dp))
-
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                label = { Text("Email", color = Color.White) },
-                leadingIcon = {
-                    Icon(Icons.Outlined.Email, contentDescription = null, tint = Color.White)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color(0xFF064635),
-                    unfocusedIndicatorColor = Color.Gray
-                )
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password", color = Color.White) },
-                leadingIcon = {
-                    Icon(Icons.Outlined.Lock, contentDescription = null, tint = Color.White)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(20.dp),
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color(0xFF064635),
-                    unfocusedIndicatorColor = Color.Gray
-                ),
-                visualTransformation = PasswordVisualTransformation()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { },
-                modifier = Modifier.width(150.dp),
-                shape = RoundedCornerShape(15.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF064635),
-                    contentColor = Color.White
-                )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text("Login",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.clickable {
-                    navController.navigate("homeScreen")
-                })
-            }
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_launcher_round),
+                    contentDescription = "Logo",
+                    tint = Color.Unspecified,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .background(Color(0xFF004d40), shape = CircleShape)
+                        .padding(12.dp)
+                )
 
-            Spacer(modifier = Modifier.height(24.dp))
 
-            Text(
-                text = buildAnnotatedString {
-                    append("Already have an account? ")
-                    withStyle(style = SpanStyle(color = Color(0xFF1B5E20), fontWeight = FontWeight.Bold)) {
-                        append("Register")
-                    }
-                },
-                fontSize = 16.sp,
-                color = Color.White,
-                modifier = Modifier.clickable {
-                    navController.navigate("register")
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = buildAnnotatedString {
+                        withStyle(style = SpanStyle(color = Color(0xFF00C853))) {
+                            append("Sposti")
+                        }
+                        withStyle(style = SpanStyle(color = Color.White)) {
+                            append("Cash")
+                        }
+                    },
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(60.dp))
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = { Text("Email", color = Color.White) },
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Email, contentDescription = null, tint = Color.White)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFF00C853),
+                        unfocusedIndicatorColor = Color.Gray,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Password", color = Color.White) },
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Lock, contentDescription = null, tint = Color.White)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color(0xFF00C853),
+                        unfocusedIndicatorColor = Color.Gray,
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White
+                    ),
+                    visualTransformation = PasswordVisualTransformation()
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = {
+                        navController.navigate("homeScreen")
+                    },
+                    modifier = Modifier
+                        .width(160.dp)
+                        .height(48.dp),
+                    shape = RoundedCornerShape(30.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF00C853),
+                        contentColor = Color.White
+                    ),
+                    elevation = ButtonDefaults.buttonElevation(
+                        defaultElevation = 8.dp,
+                        pressedElevation = 12.dp
+                    )
+                ) {
+                    Text(
+                        "Login",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
-            )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = buildAnnotatedString {
+                        append("Don't have an account? ")
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color(0xFF00E676),
+                                fontWeight = FontWeight.Bold
+                            )
+                        ) {
+                            append("Register")
+                        }
+                    },
+                    fontSize = 16.sp,
+                    color = Color.White,
+                    modifier = Modifier.clickable {
+                        navController.navigate("register")
+                    }
+                )
+            }
         }
     }
 }
