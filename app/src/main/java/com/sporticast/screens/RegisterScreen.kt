@@ -34,11 +34,11 @@ fun RegisterScreen(navController: NavController) {
     var confirmPassword by remember { mutableStateOf("") }
 
     val backgroundGradient = Brush.verticalGradient(
-        colors =listOf(
+        colors = listOf(
             Color(0xFF08191f),
-            Color(0xFF1A1A1A)
+            Color(0xFF152e3a),
+            Color(0xFF1f3e52)
         )
-
     )
 
 
