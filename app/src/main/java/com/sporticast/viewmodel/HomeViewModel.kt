@@ -38,6 +38,7 @@ class HomeViewModel : ViewModel() {
     private fun loadFeaturedBooks() {
         _featuredBooks.value = listOf(
             Book(
+                "1",
                 "The Alchemist",
                 "Paulo Coelho",
                 "4 hours 30 minutes",
@@ -46,6 +47,16 @@ class HomeViewModel : ViewModel() {
                 1000
             ),
             Book(
+                "2",
+                "Tuna Đai Dương",
+                "Paulo Tuna",
+                "4 hours 30 minutes",
+                "https://example.com/image1.jpg",
+                4.5f,
+                1000
+            ),
+            Book(
+                "3",
                 "How to Win Friends and Influence People",
                 "Dale Carnegie",
                 "6 hours 15 minutes", 
@@ -54,6 +65,7 @@ class HomeViewModel : ViewModel() {
                 1500
             ),
             Book(
+                "4",
                 "I See Yellow Flowers on the Green Grass",
                 "Nguyen Nhat Anh",
                 "5 hours 45 minutes",

@@ -83,7 +83,9 @@ fun HomeScreen(navController: NavController) {
                 items(featuredBooks) { book ->
                     FeaturedContentItem(
                         book = book,
-                        onClick = { viewModel.onBookSelected(book) }
+                        onClick = {
+                            navController.navigate("audiobookDetail/${book.id}")
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                 }
@@ -91,3 +93,4 @@ fun HomeScreen(navController: NavController) {
         }
     }
 }
+

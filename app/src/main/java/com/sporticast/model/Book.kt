@@ -1,5 +1,6 @@
 package com.sporticast.model
 data class Book(
+    val id:String,
     val title: String,
     val author: String,
     val duration: String,
