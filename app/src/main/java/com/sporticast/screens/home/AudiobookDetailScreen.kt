@@ -59,16 +59,30 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 color = Color.White,
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
-
+            Spacer(modifier = Modifier.height(15.dp))
             Text(
                 text = "Tác giả ${book.author}",
                 fontSize = 16.sp,
                 color = Color.LightGray,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
             )
-
+            Spacer(modifier = Modifier.height(5.dp))
             Text(
-                text = "Thời lượng: ${book.duration}    ⭐ ${book.rating} ",
+                text = "Thể loại: ${book.category}",
+                fontSize = 16.sp,
+                color = Color.LightGray,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "Thời lượng: ${book.duration}  ",
+                fontSize = 16.sp,
+                color = Color.LightGray,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            Text(
+                text = "Đánh giá: ⭐ ${book.rating}",
                 fontSize = 16.sp,
                 color = Color.LightGray,
                 modifier = Modifier.padding(horizontal = 16.dp)

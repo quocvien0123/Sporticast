@@ -21,11 +21,18 @@ class HomeViewModel : ViewModel() {
         loadCategories()
         loadFeaturedBooks()
     }
+    private val _selectedCategory = MutableStateFlow<Category?>(null)
+    val selectedCategory: StateFlow<Category?> = _selectedCategory.asStateFlow()
+
+    fun onCategorySelected(category: Category) {
+        _selectedCategory.value = if (_selectedCategory.value == category) null else category
+    }
+
 
     private fun loadCategories() {
         _categories.value = listOf(
             Category("Novel", "📚"),
-            Category("Business", "💼"), 
+            Category("Business", "💼"),
             Category("Psychology", "🧠"),
             Category("Science", "🔬"),
             Category("History", "⏳"),
@@ -44,7 +51,8 @@ class HomeViewModel : ViewModel() {
                 "4 hours 30 minutes",
                 "https://example.com/image1.jpg",
                 4.5f,
-                1000
+                1000,
+                "Novel"
             ),
             Book(
                 "2",
@@ -53,16 +61,18 @@ class HomeViewModel : ViewModel() {
                 "4 hours 30 minutes",
                 "https://example.com/image1.jpg",
                 4.5f,
-                1000
+                1000,
+                "Novel"
             ),
             Book(
                 "3",
                 "How to Win Friends and Influence People",
                 "Dale Carnegie",
-                "6 hours 15 minutes", 
+                "6 hours 15 minutes",
                 "https://example.com/image2.jpg",
                 4.8f,
-                1500
+                1500,
+                "Business"
             ),
             Book(
                 "4",
@@ -71,7 +81,8 @@ class HomeViewModel : ViewModel() {
                 "5 hours 45 minutes",
                 "https://example.com/image3.jpg",
                 4.7f,
-                1200
+                1200,
+                "Children"
             )
         )
     }
@@ -81,9 +92,7 @@ class HomeViewModel : ViewModel() {
         // TODO: Implement search functionality
     }
 
-    fun onCategorySelected(category: Category) {
-        // TODO: Implement category selection
-    }
+
 
     fun onBookSelected(book: Book) {
         // TODO: Implement book selection

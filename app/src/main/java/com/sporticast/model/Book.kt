@@ -6,5 +6,6 @@ data class Book(
     val duration: String,
     val imageUrl: String,
     val rating: Float,
-    val listenCount: Int
+    val listenCount: Int,
+    val category: String
 )

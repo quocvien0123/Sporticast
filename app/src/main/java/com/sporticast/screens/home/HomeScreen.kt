@@ -23,12 +23,17 @@ fun HomeScreen(navController: NavController) {
     val viewModel: HomeViewModel = viewModel()
     val categories by viewModel.categories.collectAsState()
     val featuredBooks by viewModel.featuredBooks.collectAsState()
+    val selectedCategory by viewModel.selectedCategory.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+
+    val filteredBooks = selectedCategory?.let { category ->
+        featuredBooks.filter { it.category == category.name }
+    } ?: featuredBooks
+
 
     var showProfileMenu by remember { mutableStateOf(false) }
     var showNotificationMenu by remember { mutableStateOf(false) }
     var showSettingsMenu by remember { mutableStateOf(false) }
-
 
     Scaffold(
         bottomBar = {
@@ -56,7 +61,6 @@ fun HomeScreen(navController: NavController) {
                 }
             )
 
-
             SearchBar(searchQuery) { viewModel.onSearchQueryChanged(it) }
 
             LazyColumn(
@@ -71,16 +75,18 @@ fun HomeScreen(navController: NavController) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
+                    val categoryName = selectedCategory?.let { "${it.icon} ${it.name}" }
                     Text(
-                        text = "Featured Books",
-                        color = Color.White,
-                        fontSize = 18.sp,
+                        text = categoryName?.let { "Books in $it" } ?: "Featured Books",
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        maxLines = 1
                     )
+
                 }
 
-                items(featuredBooks) { book ->
+                items(filteredBooks) { book ->
                     FeaturedContentItem(
                         book = book,
                         onClick = {
@@ -93,4 +99,3 @@ fun HomeScreen(navController: NavController) {
         }
     }
 }
-

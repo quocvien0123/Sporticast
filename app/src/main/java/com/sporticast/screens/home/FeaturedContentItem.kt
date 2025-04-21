@@ -40,11 +40,10 @@ fun FeaturedContentItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(120.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1A1A1A)
+            containerColor = Color(0xFF2C2C2C)
         )
     ) {
         Row(
@@ -76,15 +75,24 @@ fun FeaturedContentItem(
                     text = book.title,
                     color = Color.White,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 2,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = book.author,
                     color = Color.Gray,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    maxLines = 1
+                )
+                Text(
+                    text = book.category,
+                    color = Color.Gray,
+                    fontSize = 14.sp,
+                    maxLines = 1
                 )
                 Spacer(modifier = Modifier.height(4.dp))
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -100,7 +108,7 @@ fun FeaturedContentItem(
                         color = Color.Gray,
                         fontSize = 12.sp
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = "Rating",
@@ -113,7 +121,7 @@ fun FeaturedContentItem(
                         color = Color.Gray,
                         fontSize = 12.sp
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Icon(
                         imageVector = Icons.Default.Headphones,
                         contentDescription = "Listen Count",
@@ -127,7 +135,6 @@ fun FeaturedContentItem(
                         fontSize = 12.sp
                     )
                 }
-
             }
         }
     }
