@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sporticast.model.Category
@@ -23,8 +24,12 @@ import com.sporticast.model.Category
 @Composable
 fun CategoryItem(
     category: Category,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
+    val backgroundColor = if (isSelected) Color.White.copy(alpha = 0.2f) else Color(0xFF1E1E1E)
+    val contentColor = if (isSelected) Color.White else Color.White
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
@@ -36,22 +41,22 @@ fun CategoryItem(
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape)
-                .background(Color(0xFF064635))
+                .background(backgroundColor)
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = category.icon,
-                color = Color.White,
+                color = contentColor,
+                fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = category.name,
-            color = Color.White,
+            color = contentColor,
             fontSize = 12.sp
         )
     }
 }
-

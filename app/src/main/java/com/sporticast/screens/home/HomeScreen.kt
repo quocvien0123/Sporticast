@@ -9,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,19 +71,25 @@ fun HomeScreen(navController: NavController) {
                 item {
                     CategorySection(
                         categories = categories,
+                        selectedCategory = selectedCategory,
                         onClick = { viewModel.onCategorySelected(it) }
                     )
+
 
                     Spacer(modifier = Modifier.height(24.dp))
 
                     val categoryName = selectedCategory?.let { "${it.icon} ${it.name}" }
                     Text(
                         text = categoryName?.let { "Books in $it" } ?: "Featured Books",
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.Medium,
                         color = Color.White,
+
                         fontSize = 20.sp,
                         maxLines = 1
                     )
+                    Spacer(modifier = Modifier.height(40.dp))
+
+
 
                 }
 

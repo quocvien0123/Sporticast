@@ -15,6 +15,7 @@ import com.sporticast.model.Category
 @Composable
 fun CategorySection(
     categories: List<Category>,
+    selectedCategory: Category?,
     onClick: (Category) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -26,6 +27,7 @@ fun CategorySection(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
+
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 8.dp)
@@ -33,7 +35,9 @@ fun CategorySection(
             items(categories) { category ->
                 CategoryItem(
                     category = category,
-                    onClick = { onClick(category) }
+                    isSelected = category == selectedCategory,
+                    onClick = { onClick(category) },
+
                 )
             }
         }
