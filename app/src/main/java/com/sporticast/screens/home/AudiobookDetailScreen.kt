@@ -161,9 +161,10 @@ fun TabChaptersContent() {
 
 
         // Danh sách chương
-        repeat(5) { index ->
+        repeat(6) { index ->
             Text(
                 text = "Chương ${index + 1}: Tên chương...",
+
                 color = Color.White,
                 fontSize = 15.sp,
                 modifier = Modifier.padding(vertical = 4.dp)
