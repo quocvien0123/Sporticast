@@ -38,7 +38,7 @@ interface ApiService {
 }
 interface AuthApiService{
     @POST("/api/auth/login")
-    suspend fun loginUser(@Body request: LoginRequest): Response<ResponseBody>
+    suspend fun loginUser(@Body request: LoginRequest): Response<LoginResponse>
 }
 
 object RetrofitClient {
@@ -46,7 +46,7 @@ object RetrofitClient {
         .setLenient()
         .create()
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:8080") // Nếu chạy trên emulator, localhost = 10.0.2.2
+        .baseUrl("http://10.0.2.2:8080")
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
 

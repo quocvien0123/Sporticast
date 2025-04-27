@@ -1,6 +1,5 @@
 package com.sporticast.screens
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,7 +13,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -31,9 +29,7 @@ import com.sporticast.R
 import com.sporticast.screens.data.api.LoginRequest
 import com.sporticast.screens.data.api.RetrofitClient
 import com.sporticast.ui.theme.colorLg_Rg
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import java.io.IOException
+
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -143,7 +139,7 @@ fun LoginScreen(navController: NavController) {
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-
+                val coroutineScope = rememberCoroutineScope()
                 Button(
                     onClick = {
                         // Validate input first
@@ -155,37 +151,23 @@ fun LoginScreen(navController: NavController) {
                         isLoading = true
                         errorMessage = null
 
-                        // Use viewModelScope instead of creating new CoroutineScope
-                        CoroutineScope(Dispatchers.Main).launch {
+
+                        coroutineScope.launch {
                             try {
                                 val response = RetrofitClient.apiServiceLogin.loginUser(
                                     LoginRequest(
-                                        email = email.trim(),
-                                        password = password.trim()
+                                        email = email,
+                                        password = password
                                     )
                                 )
-
-                                when {
-                                    response.isSuccessful -> {
-                                        // Handle successful login
-                                        val loginResponse = response.body()
-                                        // You might want to save user data here if needed
-                                        navController.navigate("homeScreen") {
-                                            popUpTo("loginScreen") { inclusive = true }
-                                        }
-                                    }
-                                    response.code() == 401 -> {
-                                        errorMessage = "Invalid email or password"
-                                    }
-                                    else -> {
-                                        errorMessage = "Login failed: ${response.message()}"
-                                    }
+                                val loginResponse = response.body()
+                                if (response.isSuccessful && loginResponse?.message == "Login Success") {
+                                    navController.navigate("homeScreen")
+                                } else {
+                                    errorMessage = loginResponse?.message ?: "Login failed"
                                 }
                             } catch (e: Exception) {
-                                errorMessage = when (e) {
-                                    is IOException -> "Network error. Please check your connection."
-                                    else -> "An error occurred: ${e.localizedMessage}"
-                                }
+                                errorMessage = "An error occurred: ${e.localizedMessage}"
                             } finally {
                                 isLoading = false
                             }
@@ -219,15 +201,8 @@ fun LoginScreen(navController: NavController) {
                     }
                 }
 
+
                 if (errorMessage != null) {
-                    Text(
-                        text = errorMessage ?: "",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(top = 8.dp)
-                    )
-                }
-               if(errorMessage != null) {
                     Text(
                         text = errorMessage ?: "",
                         color = Color.Red,
@@ -261,3 +236,4 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
+
