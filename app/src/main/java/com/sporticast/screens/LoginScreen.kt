@@ -26,13 +26,21 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 import com.sporticast.R
+import com.sporticast.screens.data.api.LoginRequest
+import com.sporticast.screens.data.api.RetrofitClient
 import com.sporticast.ui.theme.colorLg_Rg
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import java.io.IOException
 
 @Composable
 fun LoginScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
     val backgroundGradient = Brush.verticalGradient(colors = colorLg_Rg)
 
@@ -138,7 +146,50 @@ fun LoginScreen(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate("homeScreen")
+                        // Validate input first
+                        if (email.isBlank() || password.isBlank()) {
+                            errorMessage = "Email and password cannot be empty"
+                            return@Button
+                        }
+
+                        isLoading = true
+                        errorMessage = null
+
+                        // Use viewModelScope instead of creating new CoroutineScope
+                        CoroutineScope(Dispatchers.Main).launch {
+                            try {
+                                val response = RetrofitClient.apiServiceLogin.loginUser(
+                                    LoginRequest(
+                                        email = email.trim(),
+                                        password = password.trim()
+                                    )
+                                )
+
+                                when {
+                                    response.isSuccessful -> {
+                                        // Handle successful login
+                                        val loginResponse = response.body()
+                                        // You might want to save user data here if needed
+                                        navController.navigate("homeScreen") {
+                                            popUpTo("loginScreen") { inclusive = true }
+                                        }
+                                    }
+                                    response.code() == 401 -> {
+                                        errorMessage = "Invalid email or password"
+                                    }
+                                    else -> {
+                                        errorMessage = "Login failed: ${response.message()}"
+                                    }
+                                }
+                            } catch (e: Exception) {
+                                errorMessage = when (e) {
+                                    is IOException -> "Network error. Please check your connection."
+                                    else -> "An error occurred: ${e.localizedMessage}"
+                                }
+                            } finally {
+                                isLoading = false
+                            }
+                        }
                     },
                     modifier = Modifier
                         .width(160.dp)
@@ -151,14 +202,40 @@ fun LoginScreen(navController: NavController) {
                     elevation = ButtonDefaults.buttonElevation(
                         defaultElevation = 8.dp,
                         pressedElevation = 12.dp
-                    )
+                    ),
+                    enabled = !isLoading
                 ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text(
+                            "Login",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                if (errorMessage != null) {
                     Text(
-                        "Login",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
+                        text = errorMessage ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
+               if(errorMessage != null) {
+                    Text(
+                        text = errorMessage ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 

@@ -26,7 +26,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.R
+import com.sporticast.screens.data.api.RegisterRequest
+import com.sporticast.screens.data.api.RetrofitClient
 import com.sporticast.ui.theme.colorLg_Rg
+import kotlinx.coroutines.launch
+
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -34,6 +38,13 @@ fun RegisterScreen(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    val scope =rememberCoroutineScope()
+    var errorMessage by remember { mutableStateOf<String?>(null) }
+    var isLoading    by remember { mutableStateOf(false) }
+
+
+
+
 
     val backgroundGradient = Brush.verticalGradient(colors = colorLg_Rg)
 
@@ -158,7 +169,33 @@ fun RegisterScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Button(
-                    onClick = { /* Handle register */ },
+                    onClick = {
+                        if(password!= confirmPassword){
+                            errorMessage = "Passwords do not match"
+                            return@Button
+
+                        }
+                        isLoading = true
+                        scope.launch {
+                            try {
+                                val response = RetrofitClient.apiService.registerUser(
+                                    RegisterRequest(
+                                        name = name,
+                                        email = email,
+                                        password = password
+                                    )
+                                )
+                                isLoading = false
+                                navController.navigate("login")
+
+
+                            }catch (e: Exception) {
+                                isLoading = false
+                                errorMessage =e.message
+                            }
+
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
@@ -168,8 +205,24 @@ fun RegisterScreen(navController: NavController) {
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Register", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    if(isLoading) {
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else {
+                        Text("Register", fontSize = 18.sp, fontWeight = FontWeight.Bold)                    }
+
                 }
+                if (errorMessage != null) {
+                    Text(
+                        text = errorMessage ?: "",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+                }
+
 
                 Spacer(modifier = Modifier.height(16.dp))
 
