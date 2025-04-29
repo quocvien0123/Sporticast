@@ -3,9 +3,13 @@ package com.sporticast.viewmodel
 import androidx.lifecycle.ViewModel
 import com.sporticast.model.Category
 import com.sporticast.model.Book
+import com.sporticast.screens.data.api.RetrofitService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
 
 class HomeViewModel : ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
@@ -30,17 +34,36 @@ class HomeViewModel : ViewModel() {
 
 
     private fun loadCategories() {
-        _categories.value = listOf(
-            Category("Novel", "📚"),
-            Category("Business", "💼"),
-            Category("Psychology", "🧠"),
-            Category("Science", "🔬"),
-            Category("History", "⏳"),
-            Category("Growth", "🌟"),
-            Category("Literature", "✍️"),
-            Category("Children", "👶")
-        )
+        viewModelScope.launch {
+            try {
+                val response = RetrofitService.categoryApi.getCategories()
+                _categories.value = response.map { categoryFromDb: Category ->
+                    Category(
+                        id = categoryFromDb.id,
+                        name = categoryFromDb.name,
+                        icon = getIconForCategory(categoryFromDb.name)
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
+    private fun getIconForCategory(name: String): String {
+        return when (name) {
+            "Novel" -> "📚"
+            "Business" -> "💼"
+            "Psychology" -> "🧠"
+            "Science" -> "🔬"
+            "History" -> "⏳"
+            "Growth" -> "🌟"
+            "Literature" -> "✍️"
+            "Children" -> "👶"
+            else -> "📚" // Icon mặc định
+        }
+    }
+
+
 
     private fun loadFeaturedBooks() {
         _featuredBooks.value = listOf(

@@ -24,12 +24,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
 import com.sporticast.R
-import com.sporticast.screens.data.api.LoginRequest
-import com.sporticast.screens.data.api.RetrofitClient
+import com.sporticast.dto.request.LoginRequest
+import com.sporticast.screens.data.api.RetrofitService
 import com.sporticast.ui.theme.colorLg_Rg
-
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -38,6 +37,7 @@ fun LoginScreen(navController: NavController) {
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
+    val coroutineScope = rememberCoroutineScope()
     val backgroundGradient = Brush.verticalGradient(colors = colorLg_Rg)
 
     Box(
@@ -57,10 +57,7 @@ fun LoginScreen(navController: NavController) {
                 .border(
                     width = 1.dp,
                     brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.3f),
-                            Color.Transparent
-                        )
+                        colors = listOf(Color.White.copy(alpha = 0.3f), Color.Transparent)
                     ),
                     shape = RoundedCornerShape(24.dp)
                 )
@@ -79,17 +76,12 @@ fun LoginScreen(navController: NavController) {
                         .padding(12.dp)
                 )
 
-
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Text(
                     text = buildAnnotatedString {
-                        withStyle(style = SpanStyle(color = Color(0xFF00C853))) {
-                            append("Sposti")
-                        }
-                        withStyle(style = SpanStyle(color = Color.White)) {
-                            append("Cash")
-                        }
+                        withStyle(style = SpanStyle(color = Color(0xFF00C853))) { append("Sposti") }
+                        withStyle(style = SpanStyle(color = Color.White)) { append("Cash") }
                     },
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold
@@ -139,10 +131,9 @@ fun LoginScreen(navController: NavController) {
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
-                val coroutineScope = rememberCoroutineScope()
+
                 Button(
                     onClick = {
-                        // Validate input first
                         if (email.isBlank() || password.isBlank()) {
                             errorMessage = "Email and password cannot be empty"
                             return@Button
@@ -151,16 +142,13 @@ fun LoginScreen(navController: NavController) {
                         isLoading = true
                         errorMessage = null
 
-
                         coroutineScope.launch {
                             try {
-                                val response = RetrofitClient.apiServiceLogin.loginUser(
-                                    LoginRequest(
-                                        email = email,
-                                        password = password
-                                    )
+                                val response = RetrofitService.loginApi.loginUser(
+                                    LoginRequest(email, password)
                                 )
                                 val loginResponse = response.body()
+
                                 if (response.isSuccessful && loginResponse?.message == "Login Success") {
                                     navController.navigate("homeScreen")
                                 } else {
@@ -193,24 +181,18 @@ fun LoginScreen(navController: NavController) {
                             modifier = Modifier.size(24.dp)
                         )
                     } else {
-                        Text(
-                            "Login",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Text("Login", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                     }
                 }
 
-
-                if (errorMessage != null) {
+                errorMessage?.let {
                     Text(
-                        text = errorMessage ?: "",
+                        text = it,
                         color = Color.Red,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
-
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -222,9 +204,7 @@ fun LoginScreen(navController: NavController) {
                                 color = Color(0xFF00E676),
                                 fontWeight = FontWeight.Bold
                             )
-                        ) {
-                            append("Register")
-                        }
+                        ) { append("Register") }
                     },
                     fontSize = 16.sp,
                     color = Color.White,
@@ -236,4 +216,3 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
-

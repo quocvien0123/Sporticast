@@ -26,8 +26,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.R
-import com.sporticast.screens.data.api.RegisterRequest
-import com.sporticast.screens.data.api.RetrofitClient
+import com.sporticast.dto.request.RegisterRequest
+import com.sporticast.screens.data.api.RetrofitService
 import com.sporticast.ui.theme.colorLg_Rg
 import kotlinx.coroutines.launch
 
@@ -178,7 +178,7 @@ fun RegisterScreen(navController: NavController) {
                         isLoading = true
                         scope.launch {
                             try {
-                                val response = RetrofitClient.apiService.registerUser(
+                                val response = RetrofitService.registerApi.registerUser(
                                     RegisterRequest(
                                         name = name,
                                         email = email,
