@@ -170,10 +170,9 @@ fun RegisterScreen(navController: NavController) {
 
                 Button(
                     onClick = {
-                        if(password!= confirmPassword){
+                        if (password != confirmPassword) {
                             errorMessage = "Passwords do not match"
                             return@Button
-
                         }
                         isLoading = true
                         scope.launch {

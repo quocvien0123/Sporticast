@@ -142,7 +142,7 @@ fun LoginScreen(navController: NavController) {
                 val coroutineScope = rememberCoroutineScope()
                 Button(
                     onClick = {
-                        // Validate input first
+
                         if (email.isBlank() || password.isBlank()) {
                             errorMessage = "Email and password cannot be empty"
                             return@Button

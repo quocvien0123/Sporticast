@@ -91,7 +91,12 @@ class HomeViewModel : ViewModel() {
         _searchQuery.value = query
         // TODO: Implement search functionality
     }
-
+    fun getBookById(id: String): Book? {
+        return _featuredBooks.value.find { it.id == id }
+    }
+    fun getBookByTitle(title: String): Book? {
+        return _featuredBooks.value.find { it.title == title }
+    }
 
 
     fun onBookSelected(book: Book) {

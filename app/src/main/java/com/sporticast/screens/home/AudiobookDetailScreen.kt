@@ -1,5 +1,6 @@
 package com.sporticast.screens.home
 
+import android.R.attr.onClick
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -29,17 +30,22 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
     val tabs = listOf("Giới thiệu", "Mục lục", "Tương tự")
 
     Scaffold(
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF121212)
-            ) {
-                NavigationBarItem(
-                    selected = true,
-                    onClick = { navController.popBackStack() },
-                    icon = { Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White) },
-                    label = { Text("Back", color = Color.White) }
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "", color = Color.White, fontSize = 20.sp) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
                 )
-            }
+            )
         },
         containerColor = Color.Transparent
     ) { paddingValues ->
@@ -89,13 +95,18 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(50.dp))
             Button(
-                onClick = { /* TODO: xử lý phát tất cả chương */ },
+                onClick = {
+
+                    navController.navigate("player/${book.title}/${book.author}/${book.duration}")
+
+
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
                     .height(50.dp),
-                shape = RoundedCornerShape(12.dp) // bo góc cho đẹp
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.PlayArrow,
@@ -166,7 +177,7 @@ fun TabChaptersContent() {
                 text = "Chương ${index + 1}: Tên chương...",
 
                 color = Color.White,
-                fontSize = 15.sp,
+                fontSize = 20.sp,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
@@ -178,7 +189,7 @@ fun TabSimilarBooksContent() {
     Text(
         text = "Bạn có thể thích những sách như: Atomic Habits, 7 Thói Quen Hiệu Quả...",
         color = Color.White,
-        fontSize = 15.sp,
+        fontSize = 20.sp,
         modifier = Modifier.padding(16.dp)
     )
 }
