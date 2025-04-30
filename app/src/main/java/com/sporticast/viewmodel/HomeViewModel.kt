@@ -1,11 +1,14 @@
 package com.sporticast.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sporticast.model.Category
 import com.sporticast.model.Book
+import com.sporticast.screens.data.api.RetrofitService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
@@ -30,61 +33,58 @@ class HomeViewModel : ViewModel() {
 
 
     private fun loadCategories() {
-        _categories.value = listOf(
-            Category("Novel", "📚"),
-            Category("Business", "💼"),
-            Category("Psychology", "🧠"),
-            Category("Science", "🔬"),
-            Category("History", "⏳"),
-            Category("Growth", "🌟"),
-            Category("Literature", "✍️"),
-            Category("Children", "👶")
-        )
+        viewModelScope.launch {
+            try {
+                val response = RetrofitService.categoryApi.getCategories()
+                _categories.value = response.map { categoryFromDb: Category ->
+                    Category(
+                        id = categoryFromDb.id,
+                        name = categoryFromDb.name,
+                        icon = getIconForCategory(categoryFromDb.name)
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private fun getIconForCategory(name: String): String {
+        return when (name) {
+            "Novel" -> "📚"
+            "Business" -> "💼"
+            "Psychology" -> "🧠"
+            "Science" -> "🔬"
+            "History" -> "⏳"
+            "Growth" -> "🌟"
+            "Literature" -> "✍️"
+            "Children" -> "👶"
+            else -> "📚" // Icon mặc định
+        }
     }
 
+
+
     private fun loadFeaturedBooks() {
-        _featuredBooks.value = listOf(
-            Book(
-                "1",
-                "The Alchemist",
-                "Paulo Coelho",
-                "4 hours 30 minutes",
-                "https://example.com/image1.jpg",
-                4.5f,
-                1000,
-                "Novel"
-            ),
-            Book(
-                "2",
-                "Tuna Đai Dương",
-                "Paulo Tuna",
-                "4 hours 30 minutes",
-                "https://example.com/image1.jpg",
-                4.5f,
-                1000,
-                "Novel"
-            ),
-            Book(
-                "3",
-                "How to Win Friends and Influence People",
-                "Dale Carnegie",
-                "6 hours 15 minutes",
-                "https://example.com/image2.jpg",
-                4.8f,
-                1500,
-                "Business"
-            ),
-            Book(
-                "4",
-                "I See Yellow Flowers on the Green Grass",
-                "Nguyen Nhat Anh",
-                "5 hours 45 minutes",
-                "https://example.com/image3.jpg",
-                4.7f,
-                1200,
-                "Children"
-            )
-        )
+        viewModelScope.launch {
+            try {
+                val response = RetrofitService.bookApi.getBooks()
+                _featuredBooks.value = response.map { dto ->
+                    Book(
+                        id = dto.id,
+                        title = dto.title,
+                        author = dto.author,
+                        duration = dto.duration,
+                        imageUrl = dto.imageUrl,
+                        rating = dto.rating,
+                        listenCount = dto.listenCount,
+                        category = dto.category
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Xử lý lỗi nếu cần
+            }
+        }
     }
 
     fun onSearchQueryChanged(query: String) {

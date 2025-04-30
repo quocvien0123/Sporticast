@@ -154,8 +154,6 @@ fun HomeTopBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
         ),
-        modifier = Modifier.background(
-            Brush.verticalGradient(colors = colorLg_Rg)
-        )
+
     )
 }

@@ -3,6 +3,6 @@ import com.sporticast.model.Category
 import retrofit2.http.GET
 
 interface CategoriesApi {
-    @GET("api/categories")
+    @GET("users/categories")
     suspend fun getCategories(): List<Category>
 }

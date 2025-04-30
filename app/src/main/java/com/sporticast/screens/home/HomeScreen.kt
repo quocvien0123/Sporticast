@@ -31,76 +31,82 @@ fun HomeScreen(navController: NavController) {
         featuredBooks.filter { it.category == category.name }
     } ?: featuredBooks
 
+    val gradientBrush = Brush.verticalGradient(colors = colorLg_Rg)
 
     var showProfileMenu by remember { mutableStateOf(false) }
     var showNotificationMenu by remember { mutableStateOf(false) }
     var showSettingsMenu by remember { mutableStateOf(false) }
 
-    Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController)
-        },
-        containerColor = Color.Transparent
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Brush.verticalGradient(colors = colorLg_Rg))
-        ) {
-            HomeTopBar(
-                showProfileMenu = showProfileMenu,
-                showNotificationMenu = showNotificationMenu,
-                showSettingsMenu = showSettingsMenu,
-                onProfileMenuChange = { showProfileMenu = it },
-                onNotificationMenuChange = { showNotificationMenu = it },
-                onSettingsMenuChange = { showSettingsMenu = it },
-                onLogout = {
-                    navController.navigate("login") {
-                        popUpTo(navController.graph.startDestinationId) { inclusive = true }
-                    }
-                }
-            )
-
-            SearchBar(searchQuery) { viewModel.onSearchQueryChanged(it) }
-
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(gradientBrush)
+    ){
+        Scaffold(
+            bottomBar = {
+                BottomNavigationBar(navController)
+            },
+            containerColor = Color.Transparent
+        ) { paddingValues ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
             ) {
-                item {
-                    CategorySection(
-                        categories = categories,
-                        selectedCategory = selectedCategory,
-                        onClick = { viewModel.onCategorySelected(it) }
-                    )
-
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    val categoryName = selectedCategory?.let { "${it.icon} ${it.name}" }
-                    Text(
-                        text = categoryName?.let { "Books in $it" } ?: "Featured Books",
-                        fontWeight = FontWeight.Medium,
-                        color = Color.White,
-
-                        fontSize = 20.sp,
-                        maxLines = 1
-                    )
-                    Spacer(modifier = Modifier.height(40.dp))
-
-
-
-                }
-
-                items(filteredBooks) { book ->
-                    FeaturedContentItem(
-                        book = book,
-                        onClick = {
-                            navController.navigate("audiobookDetail/${book.id}")
+                HomeTopBar(
+                    showProfileMenu = showProfileMenu,
+                    showNotificationMenu = showNotificationMenu,
+                    showSettingsMenu = showSettingsMenu,
+                    onProfileMenuChange = { showProfileMenu = it },
+                    onNotificationMenuChange = { showNotificationMenu = it },
+                    onSettingsMenuChange = { showSettingsMenu = it },
+                    onLogout = {
+                        navController.navigate("login") {
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    }
+                )
+
+                SearchBar(searchQuery) { viewModel.onSearchQueryChanged(it) }
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp)
+                ) {
+                    item {
+                        CategorySection(
+                            categories = categories,
+                            selectedCategory = selectedCategory,
+                            onClick = { viewModel.onCategorySelected(it) }
+                        )
+
+
+                        Spacer(modifier = Modifier.height(24.dp))
+
+                        val categoryName = selectedCategory?.let { "${it.icon} ${it.name}" }
+                        Text(
+                            text = categoryName?.let { "Books in $it" } ?: "Featured Books",
+                            fontWeight = FontWeight.Medium,
+                            color = Color.White,
+
+                            fontSize = 20.sp,
+                            maxLines = 1
+                        )
+                        Spacer(modifier = Modifier.height(40.dp))
+
+
+
+                    }
+
+                    items(filteredBooks) { book ->
+                        FeaturedContentItem(
+                            book = book,
+                            onClick = {
+                                navController.navigate("audiobookDetail/${book.id}")
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.sporticast.model.Book
+import com.sporticast.screens.FavoritesScreen
 import com.sporticast.screens.home.HomeScreen
 import com.sporticast.screens.LoginScreen
 import com.sporticast.screens.ProfileScreen
@@ -36,9 +37,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigator() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "welcomeScreen") {
+    NavHost(navController, startDestination = "homeScreen") { // chinh lai wellcomeScreen sau khi hoan thanh
         composable("profile") {
             ProfileScreen(navController)
+        }
+        composable("home") {
+            HomeScreen(navController)
+        }
+        composable("favorites") {
+            FavoritesScreen(navController)
         }
         composable(
             route = "player/{title}/{author}/{duration}",
@@ -65,10 +72,10 @@ fun AppNavigator() {
             }
         }
 
-        composable("login") { LoginScreen(navController) }
-        composable("register") { RegisterScreen(navController) }
+//        composable("login") { LoginScreen(navController) }
+//        composable("register") { RegisterScreen(navController) }
         composable("homeScreen") { HomeScreen(navController) }
-        composable("welcomeScreen") { WelcomeScreen(navController) }
+//        composable("welcomeScreen") { WelcomeScreen(navController) }
     }
 }
 

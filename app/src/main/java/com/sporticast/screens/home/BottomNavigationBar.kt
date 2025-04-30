@@ -16,12 +16,12 @@ import com.sporticast.ui.theme.colorLg_Rg
 
 data class BottomNavItem(val title: String, val icon: ImageVector, val route: String)
 
-val bottomNavItems = listOf(
-    BottomNavItem("Home", Icons.Default.Home, "home"),
-    BottomNavItem("Explore", Icons.Default.Search, "explore"),
-    BottomNavItem("Library", Icons.Default.LibraryBooks, "library"),
-    BottomNavItem("Settings", Icons.Default.Settings, "settings")
-)
+//val bottomNavItems = listOf(
+//    BottomNavItem("Home", Icons.Default.Home, "home"),
+//    BottomNavItem("Explore", Icons.Default.Search, "explore"),
+//    BottomNavItem("Library", Icons.Default.LibraryBooks, "library"),
+//    BottomNavItem("Settings", Icons.Default.Settings, "settings")
+//)
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
