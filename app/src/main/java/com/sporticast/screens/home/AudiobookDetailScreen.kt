@@ -14,6 +14,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ import androidx.navigation.NavController
 import com.sporticast.model.Book
 import com.sporticast.ui.theme.colorLg_Rg
 import androidx.compose.ui.text.font.FontWeight
+import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,7 +31,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Giới thiệu", "Mục lục", "Tương tự")
 
-    // ✅ Bao Scaffold trong Box để đảm bảo nền vẽ trước
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +55,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 )
             },
             containerColor = Color.Transparent,
-            modifier = Modifier.fillMaxSize() // ✅ Bảo đảm fill full màn
         ) { paddingValues ->
             Column(
                 modifier = Modifier
@@ -64,39 +64,37 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = book.title,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(15.dp))
+                // ✅ Ảnh trái - nội dung phải
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    AsyncImage(
+                        model = book.imageUrl,
+                        contentDescription = "Ảnh bìa sách",
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                    )
 
-                Text(
-                    text = "Tác giả ${book.author}",
-                    fontSize = 16.sp,
-                    color = Color.LightGray,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-                Text(
-                    text = "Thể loại: ${book.category}",
-                    fontSize = 16.sp,
-                    color = Color.LightGray,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-                Text(
-                    text = "Thời lượng: ${book.duration}",
-                    fontSize = 16.sp,
-                    color = Color.LightGray,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
-                Text(
-                    text = "Đánh giá: ⭐ ${book.rating}",
-                    fontSize = 16.sp,
-                    color = Color.LightGray,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
-                )
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = book.title,
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Tác giả ${book.author}", color = Color.LightGray, fontSize = 16.sp)
+                        Text(text = "Thể loại: ${book.category}", color = Color.LightGray, fontSize = 16.sp)
+                        Text(text = "Thời lượng: ${book.duration}", color = Color.LightGray, fontSize = 16.sp)
+                        Text(text = "Đánh giá: ⭐ ${book.rating}", color = Color.LightGray, fontSize = 16.sp)
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(30.dp))
 
@@ -107,15 +105,11 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp)
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Play All",
-                        tint = Color.White
-                    )
+                    Icon(Icons.Default.PlayArrow, contentDescription = "Play All", tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text("Phát tất cả", color = Color.White)
                 }
@@ -158,6 +152,9 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
         }
     }
 }
+
+
+
 @Composable
 fun TabIntroContent(book: Book) {
     Text(
