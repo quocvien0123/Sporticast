@@ -41,10 +41,12 @@ fun FeaturedContentItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp) // Card rộng gần full màn hình
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF2C2C2C)
+            containerColor = Color(0xFF1E1E2F)
         )
     ) {
         Row(
@@ -137,6 +139,19 @@ fun FeaturedContentItem(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.width(16.dp))
+            Icon(
+                imageVector = Icons.Default.PlayArrow,
+                contentDescription = "Play",
+                tint = Color.Gray,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(Color(0xFF1E1E2F), shape = RoundedCornerShape(8.dp))
+
+                    .padding(8.dp)
+                    .align(Alignment.CenterVertically)
+            )
         }
     }
 }

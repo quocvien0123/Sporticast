@@ -50,17 +50,18 @@ class HomeViewModel : ViewModel() {
     }
     private fun getIconForCategory(name: String): String {
         return when (name) {
-            "Novel" -> "📚"
-            "Business" -> "💼"
-            "Psychology" -> "🧠"
-            "Science" -> "🔬"
-            "History" -> "⏳"
-            "Growth" -> "🌟"
-            "Literature" -> "✍️"
-            "Children" -> "👶"
-            else -> "📚" // Icon mặc định
+            "Novel" -> "📖"      // Sách đang đọc, tinh tế hơn 📚
+            "Business" -> "🏢"   // Toà nhà công ty
+            "Psychology" -> "🧬" // DNA - tượng trưng cho trí tuệ, tinh tế hơn 🧠
+            "Science" -> "⚛️"    // Biểu tượng nguyên tử
+            "History" -> "🏺"    // Bình cổ Hy Lạp – đại diện cho lịch sử
+            "Growth" -> "📈"     // Đồ thị tăng trưởng
+            "Literature" -> "🖋️" // Bút máy – lịch thiệp hơn ✍️
+            "Children" -> "🧒"   // Biểu tượng bé trai/gái thay 👶
+            else -> "📘"         // Sách đóng – icon mặc định thanh lịch
         }
     }
+
 
 
 
