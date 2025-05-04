@@ -22,7 +22,7 @@ fun CategorySection(
         Text(
             text = "Categories",
             color = Color.White,
-            fontSize = 18.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )

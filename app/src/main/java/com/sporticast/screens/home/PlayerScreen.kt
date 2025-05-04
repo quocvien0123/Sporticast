@@ -49,7 +49,6 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
         }
     }
 
-    // Quay ảnh khi phát
     LaunchedEffect(isPlaying) {
         if (isPlaying) {
             rotation.animateTo(

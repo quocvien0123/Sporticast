@@ -49,14 +49,14 @@ fun CategoryItem(
                 text = category.icon,
                 color = contentColor,
                 fontWeight = FontWeight.Bold,
-                fontSize = 24.sp
+                fontSize = 30.sp
             )
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = category.name,
             color = contentColor,
-            fontSize = 12.sp
+            fontSize = 15.sp
         )
     }
 }

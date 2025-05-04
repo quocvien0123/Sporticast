@@ -41,7 +41,7 @@ fun FeaturedContentItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp) // Card rộng gần full màn hình
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -56,7 +56,7 @@ fun FeaturedContentItem(
         ) {
             Box(
                 modifier = Modifier
-                    .size(80.dp)
+                    .size(90.dp)
                     .clip(RoundedCornerShape(8.dp))
 
             ) {
@@ -77,7 +77,7 @@ fun FeaturedContentItem(
                 Text(
                     text = book.title,
                     color = Color.White,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 2,
                 )
@@ -85,13 +85,13 @@ fun FeaturedContentItem(
                 Text(
                     text = book.author,
                     color = Color.Gray,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     maxLines = 1
                 )
                 Text(
                     text = book.category,
                     color = Color.Gray,
-                    fontSize = 14.sp,
+                    fontSize = 16.sp,
                     maxLines = 1
                 )
                 Spacer(modifier = Modifier.height(4.dp))

@@ -26,10 +26,17 @@ fun HomeScreen(navController: NavController) {
     val featuredBooks by viewModel.featuredBooks.collectAsState()
     val selectedCategory by viewModel.selectedCategory.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    val filteredBooks = if (searchQuery.isNotBlank()) {
+        featuredBooks.filter { it.title.contains(searchQuery, ignoreCase = true) }
+    } else {
+        selectedCategory?.let { category ->
+            featuredBooks.filter { it.category == category.name }
+        } ?: featuredBooks
+    }
 
-    val filteredBooks = selectedCategory?.let { category ->
-        featuredBooks.filter { it.category == category.name }
-    } ?: featuredBooks
+
+
+
 
     val gradientBrush = Brush.verticalGradient(colors = colorLg_Rg)
 
@@ -67,13 +74,18 @@ fun HomeScreen(navController: NavController) {
                     }
                 )
 
-                SearchBar(searchQuery) { viewModel.onSearchQueryChanged(it) }
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChanged = { viewModel.setSearchQuery(it) },
+                    onSearchTriggered = { viewModel.performSearch() }
+                )
 
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp)
                 ) {
                     item {
+
                         CategorySection(
                             categories = categories,
                             selectedCategory = selectedCategory,

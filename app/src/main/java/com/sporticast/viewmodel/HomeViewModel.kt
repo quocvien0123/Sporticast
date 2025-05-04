@@ -11,9 +11,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
+
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
-
+    private val _searchResults = MutableStateFlow<List<Book>>(emptyList())
+    val searchResults: StateFlow<List<Book>> = _searchResults.asStateFlow()
     private val _featuredBooks = MutableStateFlow<List<Book>>(emptyList())
     val featuredBooks: StateFlow<List<Book>> = _featuredBooks.asStateFlow()
 
@@ -50,15 +52,15 @@ class HomeViewModel : ViewModel() {
     }
     private fun getIconForCategory(name: String): String {
         return when (name) {
-            "Novel" -> "📖"      // Sách đang đọc, tinh tế hơn 📚
-            "Business" -> "🏢"   // Toà nhà công ty
-            "Psychology" -> "🧬" // DNA - tượng trưng cho trí tuệ, tinh tế hơn 🧠
-            "Science" -> "⚛️"    // Biểu tượng nguyên tử
-            "History" -> "🏺"    // Bình cổ Hy Lạp – đại diện cho lịch sử
-            "Growth" -> "📈"     // Đồ thị tăng trưởng
-            "Literature" -> "🖋️" // Bút máy – lịch thiệp hơn ✍️
-            "Children" -> "🧒"   // Biểu tượng bé trai/gái thay 👶
-            else -> "📘"         // Sách đóng – icon mặc định thanh lịch
+            "Novel" -> "📖"
+            "Business" -> "🏢"
+            "Psychology" -> "🧬"
+            "Science" -> "⚛️"
+            "History" -> "🏺"
+            "Growth" -> "📈"
+            "Literature" -> "🖋️"
+            "Children" -> "🧒"
+            else -> "📘"
         }
     }
 
@@ -87,10 +89,36 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
-
-    fun onSearchQueryChanged(query: String) {
+    fun setSearchQuery(query: String) {
         _searchQuery.value = query
-        // TODO: Implement search functionality
+    }
+
+    fun performSearch() {
+        val query = _searchQuery.value
+        if (query.isBlank()) {
+            _searchResults.value = emptyList()
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val response = RetrofitService.searchApi.searchAudiobooks(query)
+                _searchResults.value = response.map { dto ->
+                    Book(
+                        id = dto.id,
+                        title = dto.title,
+                        author = dto.author,
+                        duration = dto.duration,
+                        imageUrl = dto.imageUrl,
+                        rating = dto.rating,
+                        listenCount = dto.listenCount,
+                        category = dto.category
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _searchResults.value = emptyList() // fallback khi có lỗi
+            }
+        }
     }
     fun getBookById(id: String): Book? {
         return _featuredBooks.value.find { it.id == id }

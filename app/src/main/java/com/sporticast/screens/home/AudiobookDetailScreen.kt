@@ -64,7 +64,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ✅ Ảnh trái - nội dung phải
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

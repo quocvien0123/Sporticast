@@ -17,4 +17,7 @@ object RetrofitService {
     val loginApi: LoginApi = retrofit.create(LoginApi::class.java)
     val categoryApi: CategoriesApi = retrofit.create(CategoriesApi::class.java)
     val bookApi: BookApi = retrofit.create(BookApi::class.java)
+    val searchApi: SearchApi = retrofit.create(SearchApi::class.java)
+    
+
 }
