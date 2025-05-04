@@ -7,5 +7,5 @@ data class Book(
     val imageUrl: String,
     val rating: Float,
     val listenCount: Int,
-    val category: String
+    val category: String,
 )

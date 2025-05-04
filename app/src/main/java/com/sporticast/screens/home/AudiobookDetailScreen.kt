@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -29,7 +30,7 @@ import coil.compose.AsyncImage
 @Composable
 fun AudiobookDetailScreen(book: Book, navController: NavController) {
     var selectedTabIndex by remember { mutableStateOf(0) }
-    val tabs = listOf("Giới thiệu", "Mục lục", "Tương tự")
+    val tabs = listOf("Giới thiệu", "Mục lục")
 
     Box(
         modifier = Modifier
@@ -97,20 +98,43 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                Button(
+                val blueGradient = Brush.horizontalGradient(
+                    colors = listOf(Color(0xFF42A5F5), Color(0xFF1E88E5))
+                )
+
+                Surface(
                     onClick = {
                         navController.navigate("player/${book.title}/${book.author}/${book.duration}")
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
-                        .height(50.dp),
-                    shape = RoundedCornerShape(12.dp)
+                        .height(56.dp)
+                        .background(blueGradient, RoundedCornerShape(28.dp)),
+                    shape = RoundedCornerShape(28.dp),
+                    color = Color.Transparent,
+                    shadowElevation = 8.dp
                 ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play All", tint = Color.White)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Phát tất cả", color = Color.White)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 24.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Phát tất cả",
+                            tint = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Phát tất cả",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -159,7 +183,10 @@ fun TabIntroContent(book: Book) {
     Text(
         text = "Giới thiệu sách: Đây là cuốn sách rất hay của tác giả ${book.author}, kể về hành trình khám phá bản thân, và được đánh giá rất cao bởi người đọc.",
         color = Color.White,
-        fontSize = 15.sp,
+        style = MaterialTheme.typography.bodyLarge.copy(
+            lineHeight = 28.sp,
+            fontWeight = FontWeight.Normal
+        ),
         modifier = Modifier.padding(16.dp)
     )
 }
@@ -171,7 +198,10 @@ fun TabChaptersContent() {
             Text(
                 text = "Chương ${index + 1}: Tên chương...",
                 color = Color.White,
-                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    lineHeight = 28.sp,
+                    fontWeight = FontWeight.Normal
+                ),
                 modifier = Modifier.padding(vertical = 4.dp)
             )
         }
@@ -183,7 +213,10 @@ fun TabSimilarBooksContent() {
     Text(
         text = "Bạn có thể thích những sách như: Atomic Habits, 7 Thói Quen Hiệu Quả...",
         color = Color.White,
-        fontSize = 20.sp,
+        style = MaterialTheme.typography.bodyLarge.copy(
+            lineHeight = 28.sp,
+            fontWeight = FontWeight.Normal
+        ),
         modifier = Modifier.padding(16.dp)
     )
 }
