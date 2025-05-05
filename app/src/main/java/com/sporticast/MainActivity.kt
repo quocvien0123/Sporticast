@@ -18,6 +18,7 @@ import com.sporticast.screens.LoginScreen
 import com.sporticast.screens.ProfileScreen
 import com.sporticast.screens.RegisterScreen
 import com.sporticast.screens.WelcomeScreen
+import com.sporticast.screens.admin.AdminDrawerScreen
 import com.sporticast.screens.home.AudiobookDetailScreen
 import com.sporticast.screens.home.PlayerScreen
 
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigator() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "homeScreen") { // chinh lai wellcomeScreen sau khi hoan thanh
+    NavHost(navController, startDestination = "adminScreen") { // chinh lai wellcomeScreen sau khi hoan thanh
         composable("profile") {
             ProfileScreen(navController)
         }
@@ -48,6 +49,9 @@ fun AppNavigator() {
         }
         composable("favorites") {
             FavoritesScreen(navController)
+        }
+        composable("admin") {
+            AdminDrawerScreen(navController)
         }
         composable(
             route = "player/{title}/{author}/{duration}",
@@ -77,6 +81,7 @@ fun AppNavigator() {
 //        composable("login") { LoginScreen(navController) }
 //        composable("register") { RegisterScreen(navController) }
         composable("homeScreen") { HomeScreen(navController) }
+        composable("adminScreen") { AdminDrawerScreen(navController) }
 //        composable("welcomeScreen") { WelcomeScreen(navController) }
     }
 }
