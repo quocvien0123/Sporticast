@@ -22,6 +22,8 @@ import com.sporticast.screens.home.AudiobookDetailScreen
 import com.sporticast.screens.home.PlayerScreen
 
 import com.sporticast.viewmodel.HomeViewModel
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 
 class MainActivity : ComponentActivity() {
@@ -61,16 +63,16 @@ fun AppNavigator() {
 
             PlayerScreen(title = title, author = author, duration = duration, navController = navController)
         }
-        composable("audiobookDetail/{bookId}") { backStackEntry ->
-            val viewModel: HomeViewModel = viewModel()
-            val bookId = backStackEntry.arguments?.getString("bookId") ?: ""
-            val book = viewModel.featuredBooks.value.find { it.id == bookId }
-
-
-            if (book != null) {
-                AudiobookDetailScreen(book = book as Book, navController = navController)
-            }
+        composable(
+            route = "audiobookDetail/{bookJson}",
+            arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
+            val book = Json.decodeFromString<Book>(bookJson)
+            AudiobookDetailScreen(book = book, navController = navController)
         }
+
+
 
 //        composable("login") { LoginScreen(navController) }
 //        composable("register") { RegisterScreen(navController) }

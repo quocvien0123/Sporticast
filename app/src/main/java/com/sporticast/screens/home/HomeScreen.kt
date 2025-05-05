@@ -17,6 +17,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.HomeViewModel
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,11 +118,13 @@ fun HomeScreen(navController: NavController) {
                         FeaturedContentItem(
                             book = book,
                             onClick = {
-                                navController.navigate("audiobookDetail/${book.id}")
+                                val bookJson = URLEncoder.encode(Json.encodeToString(book), StandardCharsets.UTF_8.toString())
+                                navController.navigate("audiobookDetail/$bookJson")
                             }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
+
                 }
             }
         }
