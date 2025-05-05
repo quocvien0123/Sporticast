@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headphones
@@ -26,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -41,30 +43,32 @@ fun FeaturedContentItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .shadow(12.dp, shape = RoundedCornerShape(16.dp), ambientColor = Color.Black.copy(alpha = 0.6f), spotColor = Color.Black.copy(alpha = 0.6f)), // <-- Thêm shadow mạnh mẽ
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp), // vẫn giữ để hỗ trợ M3
         colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E1E2F)
+            containerColor = Color(0xFF1E1E2F) // xanh đen sang trọng
         )
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .wrapContentHeight()
                 .padding(16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .size(90.dp)
                     .clip(RoundedCornerShape(8.dp))
-
             ) {
                 AsyncImage(
                     model = book.imageUrl,
                     contentDescription = "Ảnh bìa sách",
                     modifier = Modifier
-                        .size(120.dp)
+                        .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp))
                 )
             }
@@ -72,14 +76,16 @@ fun FeaturedContentItem(
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentHeight()
             ) {
                 Text(
                     text = book.title,
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2,
+                    maxLines = 5,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -148,7 +154,6 @@ fun FeaturedContentItem(
                 modifier = Modifier
                     .size(40.dp)
                     .background(Color(0xFF1E1E2F), shape = RoundedCornerShape(8.dp))
-
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)
             )
