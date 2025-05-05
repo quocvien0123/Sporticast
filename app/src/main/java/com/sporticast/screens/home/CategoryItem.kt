@@ -39,10 +39,10 @@ fun CategoryItem(
     ) {
         Box(
             modifier = Modifier
-                .size(60.dp)
+                .size(70.dp)
                 .clip(CircleShape)
                 .background(backgroundColor)
-                .padding(16.dp),
+                .padding(10.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

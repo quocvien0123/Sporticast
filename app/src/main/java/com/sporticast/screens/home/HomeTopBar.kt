@@ -42,11 +42,14 @@ fun HomeTopBar(
                         .padding(end = 8.dp)
                         .clip(CircleShape)
                 )
-                Text(
-                    text = "SpostiCash",
-                    color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold
+                Icon(
+                    imageVector = Icons.Default.Warehouse,
+                    contentDescription = "Headset",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .size(30.dp)
+                        .padding(end = 1.dp)
+                        .padding(start = 1.dp)
                 )
             }
         },

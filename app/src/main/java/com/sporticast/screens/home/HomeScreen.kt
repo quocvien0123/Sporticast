@@ -25,6 +25,39 @@ import java.nio.charset.StandardCharsets
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
+    val imageUrls = listOf(
+        // Atomic Habits - James Clear
+        "https://cdn1.fahasa.com/media/catalog/product/8/9/8935270703691_1.jpg",
+
+        // The Power of Now - Eckhart Tolle
+        "https://m.media-amazon.com/images/I/71zytzrg6lL._AC_UF1000,1000_QL80_.jpg",
+
+        // Can’t Hurt Me - David Goggins
+
+        // The Subtle Art of Not Giving a F*ck - Mark Manson
+        "https://m.media-amazon.com/images/I/71QKQ9mwV7L._AC_UF1000,1000_QL80_.jpg",
+
+        // Think and Grow Rich - Napoleon Hill
+
+        // Rich Dad Poor Dad - Robert T. Kiyosaki
+        "https://m.media-amazon.com/images/I/81bsw6fnUiL._AC_UF1000,1000_QL80_.jpg",
+
+        // Tôi thấy hoa vàng trên cỏ xanh
+        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974155274.jpg",
+
+        // Cô gái đến từ hôm qua
+        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974173445.jpg",
+
+        // Cho tôi xin một vé đi tuổi thơ
+        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974158015.jpg",
+
+        // Ngồi khóc trên cây
+        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974149105.jpg",
+
+        // Bảy bước tới mùa hè
+        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974138772.jpg"
+    )
+
     val viewModel: HomeViewModel = viewModel()
     val categories by viewModel.categories.collectAsState()
     val featuredBooks by viewModel.featuredBooks.collectAsState()
@@ -95,10 +128,8 @@ fun HomeScreen(navController: NavController) {
                             selectedCategory = selectedCategory,
                             onClick = { viewModel.onCategorySelected(it) }
                         )
-
-
                         Spacer(modifier = Modifier.height(24.dp))
-
+                        ImageCarouselFromUrls(imageUrls)
                         val categoryName = selectedCategory?.let { "${it.icon} ${it.name}" }
                         Text(
                             text = categoryName?.let { "Books in $it" } ?: "Featured Books",

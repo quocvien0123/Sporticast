@@ -146,22 +146,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     )
                 }
             }
-                Button(
-                    onClick = {
-                        navController.navigate("player/${book.title}/${book.author}/${book.duration}")
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1DB954)),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .height(50.dp),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = "Play All", tint = Color.White)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Phát tất cả", color = Color.White)
-                }
-
             Spacer(modifier = Modifier.height(16.dp))
 
             TabRow(
