@@ -80,7 +80,7 @@ class HomeViewModel : ViewModel() {
                         imageUrl = dto.imageUrl,
                         rating = dto.rating,
                         listenCount = dto.listenCount,
-                        category = dto.category,
+                        category = dto.category
                     )
                 }
             } catch (e: Exception) {
@@ -111,7 +111,7 @@ class HomeViewModel : ViewModel() {
                         imageUrl = dto.imageUrl,
                         rating = dto.rating,
                         listenCount = dto.listenCount,
-                        category = dto.category,
+                        category = dto.category
                     )
                 }
             } catch (e: Exception) {
