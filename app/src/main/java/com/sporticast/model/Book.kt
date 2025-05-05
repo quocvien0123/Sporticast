@@ -11,5 +11,8 @@ data class Book(
     val imageUrl: String,
     val rating: Float,
     val listenCount: Int,
-    val category: String
+    val category: String,
+    val description: String,
+    val language: String,
+    val audioUrl: String,
 )

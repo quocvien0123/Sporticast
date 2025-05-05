@@ -44,7 +44,7 @@ fun FeaturedContentItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight() // Cho phép chiều cao thay đổi theo nội dung
+            .wrapContentHeight()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
@@ -85,7 +85,7 @@ fun FeaturedContentItem(
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 5, // hoặc Int.MAX_VALUE nếu muốn hiện tất cả
+                    maxLines = 5,
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -96,6 +96,12 @@ fun FeaturedContentItem(
                 )
                 Text(
                     text = book.category,
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                    maxLines = 1
+                )
+                Text(
+                    text = book.language,
                     color = Color.Gray,
                     fontSize = 16.sp,
                     maxLines = 1

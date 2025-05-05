@@ -80,7 +80,10 @@ class HomeViewModel : ViewModel() {
                         imageUrl = dto.imageUrl,
                         rating = dto.rating,
                         listenCount = dto.listenCount,
-                        category = dto.category
+                        category = dto.category,
+                        description = dto.description,
+                        audioUrl = dto.audioUrl,
+                        language = dto.language
                     )
                 }
             } catch (e: Exception) {
@@ -111,7 +114,10 @@ class HomeViewModel : ViewModel() {
                         imageUrl = dto.imageUrl,
                         rating = dto.rating,
                         listenCount = dto.listenCount,
-                        category = dto.category
+                        category = dto.category,
+                        description = dto.description,
+                        audioUrl = dto.audioUrl,
+                        language = dto.language
                     )
                 }
             } catch (e: Exception) {

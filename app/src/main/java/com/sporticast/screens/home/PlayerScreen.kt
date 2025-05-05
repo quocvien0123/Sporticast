@@ -37,6 +37,7 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
     val backgroundGradient = Brush.verticalGradient(colors = colorLg_Rg)
     val rotation = remember { Animatable(0f) }
 
+
     // Cập nhật thời gian và slider khi đang phát
     LaunchedEffect(isPlaying) {
         while (isPlaying) {

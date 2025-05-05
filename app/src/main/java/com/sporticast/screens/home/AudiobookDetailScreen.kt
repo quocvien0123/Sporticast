@@ -1,6 +1,7 @@
 package com.sporticast.screens.home
 
-import android.R.attr.onClick
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,7 +26,9 @@ import com.sporticast.model.Book
 import com.sporticast.ui.theme.colorLg_Rg
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
-
+fun decodeText(text: String): String {
+    return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
+}
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudiobookDetailScreen(book: Book, navController: NavController) {
@@ -61,7 +64,7 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(1.dp))
 
             Row(
                 modifier = Modifier
@@ -81,13 +84,13 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = book.title,
+                        text = decodeText(book.title),
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Tác giả ${book.author}", color = Color.LightGray, fontSize = 16.sp)
+                    Text(text = "Tác giả ${decodeText(book.author)}", color = Color.LightGray, fontSize = 16.sp)
                     Text(
                         text = "Thể loại: ${book.category}",
                         color = Color.LightGray,
@@ -146,7 +149,7 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             TabRow(
                 selectedTabIndex = selectedTabIndex,
@@ -190,11 +193,16 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 @Composable
 fun TabIntroContent(book: Book) {
     Text(
-        text = "Giới thiệu sách: Đây là cuốn sách rất hay của tác giả ${book.author}, kể về hành trình khám phá bản thân, và được đánh giá rất cao bởi người đọc.",
+        text = "Giới thiệu sách: ${
+            decodeText(book.description ?: "Mô tả không có sẵn")
+        } của tác giả ${
+            decodeText(book.author ?: "Tác giả không rõ")
+        }",
         color = Color.White,
         fontSize = 15.sp,
         modifier = Modifier.padding(16.dp)
     )
+
 }
 
 @Composable
