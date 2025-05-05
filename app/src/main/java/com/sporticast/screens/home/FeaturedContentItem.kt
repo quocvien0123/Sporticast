@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Headphones
@@ -33,8 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sporticast.model.Book
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+
 
 @Composable
 fun FeaturedContentItem(
@@ -44,6 +44,7 @@ fun FeaturedContentItem(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .wrapContentHeight() // Cho phép chiều cao thay đổi theo nội dung
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
@@ -54,20 +55,20 @@ fun FeaturedContentItem(
     ) {
         Row(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
+                .wrapContentHeight() // Rất quan trọng để không bị ép chiều cao
                 .padding(16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .size(90.dp)
                     .clip(RoundedCornerShape(8.dp))
-
             ) {
                 AsyncImage(
                     model = book.imageUrl,
                     contentDescription = "Ảnh bìa sách",
                     modifier = Modifier
-                        .size(120.dp)
+                        .fillMaxSize()
                         .clip(RoundedCornerShape(12.dp))
                 )
             }
@@ -75,14 +76,16 @@ fun FeaturedContentItem(
             Spacer(modifier = Modifier.width(16.dp))
 
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentHeight()
             ) {
                 Text(
                     text = book.title,
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    maxLines = 2,
+                    maxLines = 5, // hoặc Int.MAX_VALUE nếu muốn hiện tất cả
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -151,7 +154,6 @@ fun FeaturedContentItem(
                 modifier = Modifier
                     .size(40.dp)
                     .background(Color(0xFF1E1E2F), shape = RoundedCornerShape(8.dp))
-
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)
             )
