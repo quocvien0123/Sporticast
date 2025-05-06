@@ -65,6 +65,7 @@ fun AppNavigator() {
             val author = backStackEntry.arguments?.getString("author") ?: ""
             val duration = backStackEntry.arguments?.getString("duration") ?: ""
 
+
             PlayerScreen(title = title, author = author, duration = duration, navController = navController)
         }
         composable(

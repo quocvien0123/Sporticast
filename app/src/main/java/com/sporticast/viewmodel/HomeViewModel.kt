@@ -14,31 +14,30 @@ class HomeViewModel : ViewModel() {
 
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
+
     private val _searchResults = MutableStateFlow<List<Book>>(emptyList())
     val searchResults: StateFlow<List<Book>> = _searchResults.asStateFlow()
+
     private val _featuredBooks = MutableStateFlow<List<Book>>(emptyList())
     val featuredBooks: StateFlow<List<Book>> = _featuredBooks.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _selectedCategory = MutableStateFlow<Category?>(null)
+    val selectedCategory: StateFlow<Category?> = _selectedCategory.asStateFlow()
+
     init {
         loadCategories()
         loadFeaturedBooks()
     }
-    private val _selectedCategory = MutableStateFlow<Category?>(null)
-    val selectedCategory: StateFlow<Category?> = _selectedCategory.asStateFlow()
 
-    fun onCategorySelected(category: Category) {
-        _selectedCategory.value = if (_selectedCategory.value == category) null else category
-    }
-
-
+    // ==== Danh mục ====
     private fun loadCategories() {
         viewModelScope.launch {
             try {
                 val response = RetrofitService.categoryApi.getCategories()
-                _categories.value = response.map { categoryFromDb: Category ->
+                _categories.value = response.map { categoryFromDb ->
                     Category(
                         id = categoryFromDb.id,
                         name = categoryFromDb.name,
@@ -50,6 +49,7 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
     private fun getIconForCategory(name: String): String {
         return when (name) {
             "Novel" -> "📖"
@@ -64,9 +64,12 @@ class HomeViewModel : ViewModel() {
         }
     }
 
+    fun onCategorySelected(category: Category) {
+        _selectedCategory.value = if (_selectedCategory.value == category) null else category
+        clearSearch() // ✅ Reset tìm kiếm khi chọn danh mục
+    }
 
-
-
+    // ==== Sách nổi bật ====
     private fun loadFeaturedBooks() {
         viewModelScope.launch {
             try {
@@ -88,20 +91,22 @@ class HomeViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                // Xử lý lỗi nếu cần
             }
         }
     }
+
+    // ==== Tìm kiếm ====
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
 
     fun performSearch() {
-        val query = _searchQuery.value
+        val query = _searchQuery.value.trim()
         if (query.isBlank()) {
             _searchResults.value = emptyList()
             return
         }
+
         viewModelScope.launch {
             try {
                 val response = RetrofitService.searchApi.searchAudiobooks(query)
@@ -122,19 +127,27 @@ class HomeViewModel : ViewModel() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                _searchResults.value = emptyList() // fallback khi có lỗi
+                _searchResults.value = emptyList()
             }
         }
     }
+
+    // ✅ Reset tìm kiếm
+    fun clearSearch() {
+        _searchQuery.value = ""
+        _searchResults.value = emptyList()
+    }
+
+    // ==== Tiện ích lấy sách ====
     fun getBookById(id: String): Book? {
         return _featuredBooks.value.find { it.id == id }
     }
+
     fun getBookByTitle(title: String): Book? {
         return _featuredBooks.value.find { it.title == title }
     }
 
-
     fun onBookSelected(book: Book) {
-        // TODO: Implement book selection
+        // TODO: Implement book selection logic
     }
 }
