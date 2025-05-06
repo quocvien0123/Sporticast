@@ -149,8 +149,10 @@ fun HomeScreen(navController: NavController) {
                         FeaturedContentItem(
                             book = book,
                             onClick = {
-                                val bookJson = URLEncoder.encode(Json.encodeToString(book), StandardCharsets.UTF_8.toString())
-                                navController.navigate("audiobookDetail/$bookJson")
+                                // Khi người dùng bấm vào 1 cuốn sách nào đó
+                                navController.currentBackStackEntry?.savedStateHandle?.set("book", book)
+                                navController.navigate("audiobookDetail")
+
                             }
                         )
                         Spacer(modifier = Modifier.height(16.dp))

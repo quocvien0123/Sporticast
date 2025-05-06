@@ -4,8 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -77,20 +79,17 @@ fun AppNavigator() {
                 audioUrl = audioUrl,
                 navController = navController)
         }
-        composable(
-            route = "audiobookDetail/{bookJson}",
-            arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
+        composable("audiobookDetail") {
+            val book = navController.previousBackStackEntry
+                ?.savedStateHandle
+                ?.get<Book>("book")
 
-            val bookState = produceState<Book?>(initialValue = null, bookJson) {
-                value = Json.decodeFromString<Book>(bookJson)
-            }
-
-            bookState.value?.let { book ->
+            if (book != null) {
                 AudiobookDetailScreen(book = book, navController = navController)
+            } else {
+                // Hiển thị lỗi nếu không có dữ liệu
+                Text("Không có dữ liệu sách", color = Color.White)
             }
-
         }
 
 
