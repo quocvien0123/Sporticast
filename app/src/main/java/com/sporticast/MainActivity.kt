@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.produceState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,6 +26,8 @@ import com.sporticast.screens.home.PlayerScreen
 import com.sporticast.viewmodel.HomeViewModel
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 
 class MainActivity : ComponentActivity() {
@@ -54,27 +57,40 @@ fun AppNavigator() {
             AdminDrawerScreen(navController)
         }
         composable(
-            route = "player/{title}/{author}/{duration}",
+            route = "player/{title}/{author}/{duration}/{audioUrl}",
             arguments = listOf(
                 navArgument("title") { type = NavType.StringType },
                 navArgument("author") { type = NavType.StringType },
-                navArgument("duration") { type = NavType.StringType }
+                navArgument("duration") { type = NavType.StringType },
+                navArgument("audioUrl") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val author = backStackEntry.arguments?.getString("author") ?: ""
             val duration = backStackEntry.arguments?.getString("duration") ?: ""
+            val encodedAudioUrl = backStackEntry.arguments?.getString("audioUrl") ?: ""
+            val audioUrl = URLDecoder.decode(encodedAudioUrl, StandardCharsets.UTF_8.toString())
 
-
-            PlayerScreen(title = title, author = author, duration = duration, navController = navController)
+            PlayerScreen(title = title,
+                author = author,
+                duration = duration,
+                audioUrl = audioUrl,
+                navController = navController)
         }
         composable(
             route = "audiobookDetail/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
         ) { backStackEntry ->
             val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
-            val book = Json.decodeFromString<Book>(bookJson)
-            AudiobookDetailScreen(book = book, navController = navController)
+
+            val bookState = produceState<Book?>(initialValue = null, bookJson) {
+                value = Json.decodeFromString<Book>(bookJson)
+            }
+
+            bookState.value?.let { book ->
+                AudiobookDetailScreen(book = book, navController = navController)
+            }
+
         }
 
 

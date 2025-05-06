@@ -1,5 +1,6 @@
 package com.sporticast.screens.home
 
+import android.media.MediaPlayer
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,32 +25,63 @@ import androidx.navigation.NavController
 import com.sporticast.R
 import com.sporticast.ui.theme.colorLg_Rg
 import kotlinx.coroutines.delay
-
-
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerScreen(title: String, author: String, duration: String, navController: NavController) {
+fun PlayerScreen(
+    title: String,
+    author: String,
+    duration: String,
+    audioUrl: String,
+    navController: NavController
+) {
     var isPlaying by remember { mutableStateOf(false) }
     var sliderPosition by remember { mutableStateOf(0f) }
     var timeElapsed by remember { mutableStateOf(0) }
-    var dynamicDuration by remember { mutableStateOf("00:00") } // đổi tên để tránh xung đột
-    val backgroundGradient = Brush.verticalGradient(colors = colorLg_Rg)
+    var dynamicDuration by remember { mutableStateOf("00:00") }
+
     val rotation = remember { Animatable(0f) }
 
+    // Decode text
+    fun decodeText(text: String): String {
+        return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
+    }
 
-    // Cập nhật thời gian và slider khi đang phát
+    // Tạo MediaPlayer
+    val mediaPlayer = remember {
+        MediaPlayer().apply {
+            try {
+                setDataSource(audioUrl)
+                prepare()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    // Dọn dẹp khi rời màn hình
+    DisposableEffect(Unit) {
+        onDispose {
+            if (mediaPlayer.isPlaying) mediaPlayer.stop()
+            mediaPlayer.release()
+        }
+    }
+
+    // Cập nhật thời gian và thanh slider khi đang phát
     LaunchedEffect(isPlaying) {
         while (isPlaying) {
             delay(1000)
-            timeElapsed++
-            sliderPosition = timeElapsed.toFloat() / 100f
+            timeElapsed = mediaPlayer.currentPosition / 1000
+            sliderPosition = timeElapsed.toFloat() / (mediaPlayer.duration / 1000f)
             val minutes = timeElapsed / 60
             val seconds = timeElapsed % 60
             dynamicDuration = String.format("%02d:%02d", minutes, seconds)
         }
     }
 
+    // Xoay ảnh khi phát
     LaunchedEffect(isPlaying) {
         if (isPlaying) {
             rotation.animateTo(
@@ -104,16 +136,18 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
                     .clip(CircleShape)
                     .rotate(rotation.value)
             )
+
             Spacer(modifier = Modifier.height(50.dp))
 
             Text(
-                text = title,
+                text = "Tác phẩm: ${decodeText(title)}",
                 color = Color.White,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                fontSize = 30.sp
             )
+
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Tác giả: $author", color = Color.LightGray, fontSize = 16.sp)
+            Text(text = "Tác giả: ${decodeText(author)}", color = Color.LightGray, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
@@ -122,10 +156,16 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
                 fontSize = 16.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
+
             Slider(
                 value = sliderPosition,
-                onValueChange = { sliderPosition = it },
-                valueRange = 0f..100f,
+                onValueChange = {
+                    sliderPosition = it
+                    val newTime = (it * (mediaPlayer.duration / 1000)).toInt()
+                    mediaPlayer.seekTo(newTime * 1000)
+                    timeElapsed = newTime
+                },
+                valueRange = 0f..1f,
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -138,8 +178,9 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
             ) {
                 IconButton(
                     onClick = {
-                        timeElapsed = (timeElapsed - 10).coerceAtLeast(0)
-                        sliderPosition = timeElapsed.toFloat() / 100f
+                        val rewind = (mediaPlayer.currentPosition - 10000).coerceAtLeast(0)
+                        mediaPlayer.seekTo(rewind)
+                        timeElapsed = rewind / 1000
                     },
                     modifier = Modifier.size(60.dp)
                 ) {
@@ -152,7 +193,14 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
                 }
 
                 IconButton(
-                    onClick = { isPlaying = !isPlaying },
+                    onClick = {
+                        isPlaying = !isPlaying
+                        if (isPlaying) {
+                            mediaPlayer.start()
+                        } else {
+                            mediaPlayer.pause()
+                        }
+                    },
                     modifier = Modifier.size(80.dp)
                 ) {
                     Icon(
@@ -165,8 +213,10 @@ fun PlayerScreen(title: String, author: String, duration: String, navController:
 
                 IconButton(
                     onClick = {
-                        timeElapsed += 10
-                        sliderPosition = timeElapsed.toFloat() / 100f
+                        val forward = (mediaPlayer.currentPosition + 10000)
+                            .coerceAtMost(mediaPlayer.duration)
+                        mediaPlayer.seekTo(forward)
+                        timeElapsed = forward / 1000
                     },
                     modifier = Modifier.size(60.dp)
                 ) {

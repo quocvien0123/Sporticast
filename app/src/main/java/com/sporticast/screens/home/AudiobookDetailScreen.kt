@@ -26,6 +26,8 @@ import com.sporticast.model.Book
 import com.sporticast.ui.theme.colorLg_Rg
 import androidx.compose.ui.text.font.FontWeight
 import coil.compose.AsyncImage
+import java.net.URLEncoder
+
 fun decodeText(text: String): String {
     return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
 }
@@ -117,7 +119,11 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 
             Surface(
                 onClick = {
-                    navController.navigate("player/${book.title}/${book.author}/${book.duration}")
+                    val encodedAudioUrl = URLEncoder.encode(book.audioUrl, "UTF-8")
+                    val encodedTitle = URLEncoder.encode(book.title, "UTF-8")
+                    val encodedAuthor = URLEncoder.encode(book.author, "UTF-8")
+
+                    navController.navigate("player/$encodedTitle/$encodedAuthor/${book.duration}/$encodedAudioUrl")
                 },
                 modifier = Modifier
                     .fillMaxWidth()
