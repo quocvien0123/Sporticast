@@ -1,10 +1,7 @@
 package com.sporticast.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
-@Parcelize
 @Serializable
 data class Book(
     val id:String,
@@ -18,4 +15,4 @@ data class Book(
     val description: String,
     val language: String,
     val audioUrl: String,
-): Parcelable
+)
