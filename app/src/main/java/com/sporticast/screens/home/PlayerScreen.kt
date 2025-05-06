@@ -38,30 +38,36 @@ fun PlayerScreen(
     navController: NavController
 ) {
     var isPlaying by remember { mutableStateOf(false) }
+    var isPrepared by remember { mutableStateOf(false) }
     var sliderPosition by remember { mutableStateOf(0f) }
     var timeElapsed by remember { mutableStateOf(0) }
     var dynamicDuration by remember { mutableStateOf("00:00") }
 
     val rotation = remember { Animatable(0f) }
 
-    // Decode text
     fun decodeText(text: String): String {
         return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
     }
 
-    // Tạo MediaPlayer
-    val mediaPlayer = remember {
-        MediaPlayer().apply {
-            try {
-                setDataSource(audioUrl)
-                prepare()
-            } catch (e: Exception) {
-                e.printStackTrace()
+    val mediaPlayer = remember { MediaPlayer() }
+
+    // Load async audio
+    LaunchedEffect(audioUrl) {
+        try {
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(audioUrl)
+            mediaPlayer.setOnPreparedListener {
+                isPrepared = true
+                if (isPlaying) {
+                    mediaPlayer.start()
+                }
             }
+            mediaPlayer.prepareAsync()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
-    // Dọn dẹp khi rời màn hình
     DisposableEffect(Unit) {
         onDispose {
             if (mediaPlayer.isPlaying) mediaPlayer.stop()
@@ -69,9 +75,8 @@ fun PlayerScreen(
         }
     }
 
-    // Cập nhật thời gian và thanh slider khi đang phát
-    LaunchedEffect(isPlaying) {
-        while (isPlaying) {
+    LaunchedEffect(isPlaying, isPrepared) {
+        while (isPlaying && isPrepared) {
             delay(1000)
             timeElapsed = mediaPlayer.currentPosition / 1000
             sliderPosition = timeElapsed.toFloat() / (mediaPlayer.duration / 1000f)
@@ -81,7 +86,6 @@ fun PlayerScreen(
         }
     }
 
-    // Xoay ảnh khi phát
     LaunchedEffect(isPlaying) {
         if (isPlaying) {
             rotation.animateTo(
@@ -140,7 +144,7 @@ fun PlayerScreen(
             Spacer(modifier = Modifier.height(50.dp))
 
             Text(
-                text = "Tác phẩm: ${decodeText(title)}",
+                text = "${decodeText(title)}",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
@@ -149,6 +153,12 @@ fun PlayerScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = "Tác giả: ${decodeText(author)}", color = Color.LightGray, fontSize = 16.sp)
             Spacer(modifier = Modifier.height(24.dp))
+
+            if (!isPrepared) {
+                CircularProgressIndicator(color = Color.White)
+                Text("Đang tải âm thanh...", color = Color.White)
+                return@Column
+            }
 
             Text(
                 text = dynamicDuration,
@@ -195,10 +205,8 @@ fun PlayerScreen(
                 IconButton(
                     onClick = {
                         isPlaying = !isPlaying
-                        if (isPlaying) {
-                            mediaPlayer.start()
-                        } else {
-                            mediaPlayer.pause()
+                        if (isPrepared) {
+                            if (isPlaying) mediaPlayer.start() else mediaPlayer.pause()
                         }
                     },
                     modifier = Modifier.size(80.dp)

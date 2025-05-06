@@ -39,7 +39,7 @@ fun AdminDrawerScreen(navController: NavController) {
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(300.dp),
-                drawerContainerColor = Color.Transparent // ← thêm dòng này
+                drawerContainerColor = Color.Transparent
             ) {
                 Column(
                     modifier = Modifier
