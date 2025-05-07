@@ -10,10 +10,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.unit.sp
 import com.sporticast.ui.theme.colorLg_Rg
 
 @Composable
@@ -33,23 +35,34 @@ fun AddOrEditBookScreen(
     var listenCount by remember { mutableStateOf(book?.listenCount ?: 0) }
     var id by remember { mutableStateOf(book?.id ?: "") }
 
-    LazyColumn(
+    // Define snackbar state
+    var snackbarMessage by remember { mutableStateOf("") }
+    var showSnackbar by remember { mutableStateOf(false) }
+
+    Box(
         modifier = Modifier
-            .background(Brush.verticalGradient(colorLg_Rg))
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+            .background(Brush.verticalGradient(colorLg_Rg))
+            .padding(16.dp)
     ) {
-        item {
-            Text("📚 Thông tin sách", color = Color.Transparent)
-        }
-@Composable
-        fun inputCard(label: String, value: String, onChange: (String) -> Unit, keyboardType: KeyboardType = KeyboardType.Text, height: Int? = null) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
-                elevation = CardDefaults.cardElevation(4.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text(
+                    text = "📚 Thông tin sách",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color.White
+                )
+            }
+
+            @Composable
+            fun inputCard(
+                label: String,
+                value: String,
+                onChange: (String) -> Unit,
+                keyboardType: KeyboardType = KeyboardType.Text,
+                height: Int? = null
             ) {
                 OutlinedTextField(
                     value = value,
@@ -57,60 +70,93 @@ fun AddOrEditBookScreen(
                     label = { Text(label) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
                         .let { if (height != null) it.height(height.dp) else it },
                     keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-                    shape = RoundedCornerShape(10.dp)
+                    shape = RoundedCornerShape(14.dp),
+                    textStyle = LocalTextStyle.current.copy(
+                        color = Color.White,
+                        fontSize = 16.sp,
+                    ),
                 )
+            }
+
+            item { inputCard("Tiêu đề", title, { title = it }) }
+            item { inputCard("Tác giả", author, { author = it }) }
+            item { inputCard("Thể loại", category, { category = it }) }
+            item { inputCard("Audio URL", audioUrl, { audioUrl = it }) }
+            item { inputCard("Mô tả", description, { description = it }, height = 120) }
+            item { inputCard("Thời lượng", duration, { duration = it }) }
+            item { inputCard("Ảnh bìa (URL)", imageUrl, { imageUrl = it }) }
+            item { inputCard("Ngôn ngữ", language, { language = it }) }
+
+            item {
+                inputCard(
+                    label = "Lượt nghe",
+                    value = listenCount.toString(),
+                    onChange = { listenCount = it.toIntOrNull() ?: 0 },
+                    keyboardType = KeyboardType.Number
+                )
+            }
+
+            item {
+                inputCard(
+                    label = "Đánh giá",
+                    value = rating.toString(),
+                    onChange = { rating = it.toDoubleOrNull() ?: 0.0 },
+                    keyboardType = KeyboardType.Decimal
+                )
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    onClick = {
+                        // Validate fields
+                        if (title.isEmpty() || author.isEmpty() || category.isEmpty() || audioUrl.isEmpty() ||
+                            description.isEmpty() || duration.isEmpty() || imageUrl.isEmpty() || language.isEmpty()
+                        ) {
+                            // Show error message if any field is empty
+                            snackbarMessage = "Vui lòng điền đầy đủ thông tin"
+                            showSnackbar = true
+                        } else {
+                            // Save book if all fields are valid
+                            val bookRequest = BookRequest(
+                                title = title,
+                                author = author,
+                                category = category,
+                                audioUrl = audioUrl,
+                                description = description,
+                                duration = duration,
+                                imageUrl = imageUrl,
+                                language = language,
+                                listenCount = listenCount,
+                                rating = rating.toFloat(),
+                                id = id
+                            )
+                            onSave(bookRequest)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("💾 Lưu sách")
+                }
             }
         }
 
-        item { inputCard("Tiêu đề", title, { title = it }) }
-        item { inputCard("Tác giả", author, { author = it }) }
-        item { inputCard("Thể loại", category, { category = it }) }
-        item { inputCard("Audio URL", audioUrl, { audioUrl = it }) }
-        item { inputCard("Mô tả", description, { description = it }, height = 120) }
-        item { inputCard("Thời lượng", duration, { duration = it }) }
-        item { inputCard("Ảnh bìa (URL)", imageUrl, { imageUrl = it }) }
-        item { inputCard("Ngôn ngữ", language, { language = it }) }
-
-        item {
-            inputCard("Lượt nghe", listenCount.toString(), {
-                listenCount = it.toIntOrNull() ?: 0
-            }, keyboardType = KeyboardType.Number)
-        }
-
-        item {
-            inputCard("Đánh giá", rating.toString(), {
-                rating = it.toDoubleOrNull() ?: 0.0
-            }, keyboardType = KeyboardType.Decimal)
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(24.dp))
-            Button(
-                onClick = {
-                    val bookRequest = BookRequest(
-                        title = title,
-                        author = author,
-                        category = category,
-                        audioUrl = audioUrl,
-                        description = description,
-                        duration = duration,
-                        imageUrl = imageUrl,
-                        language = language,
-                        listenCount = listenCount,
-                        rating = rating.toFloat(),
-                        id = id
-                    )
-                    onSave(bookRequest)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp)
+        // Display Snackbar if needed
+        if (showSnackbar) {
+            Snackbar(
+                modifier = Modifier.padding(16.dp),
+                action = {
+                    TextButton(onClick = { showSnackbar = false }) {
+                        Text("OK")
+                    }
+                }
             ) {
-                Text("💾 Lưu sách")
+                Text(snackbarMessage)
             }
         }
     }
