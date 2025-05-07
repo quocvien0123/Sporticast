@@ -24,7 +24,7 @@ class UsersViewModel : ViewModel() {
                         id = dto.id,
                         name = dto.name,
                         email = dto.email,
-                        role = dto.role,
+                        is_admin = dto.is_admin,
                         createdAt =  dto.createdAt,
                         updatedAt = dto.updatedAt,
                     )
