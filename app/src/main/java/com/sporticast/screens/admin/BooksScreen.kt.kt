@@ -76,11 +76,7 @@ fun BooksScreen(viewModel: BookViewModel = viewModel(),
                             modifier = Modifier
                                 .weight(1f)
                         ) {
-                            Text(
-                                text = "ID: ${book.id}",
-                                color = Color.White,
-                                fontSize = 14.sp
-                            )
+
                             Text(
                                 text = book.title,
                                 color = Color.White,

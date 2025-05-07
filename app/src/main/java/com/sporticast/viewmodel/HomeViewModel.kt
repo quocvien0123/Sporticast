@@ -140,7 +140,7 @@ class HomeViewModel : ViewModel() {
 
     // ==== Tiện ích lấy sách ====
     fun getBookById(id: String): Book? {
-        return _featuredBooks.value.find { it.id == id }
+        return _featuredBooks.value.find { it.id.toString() == id }
     }
 
     fun getBookByTitle(title: String): Book? {

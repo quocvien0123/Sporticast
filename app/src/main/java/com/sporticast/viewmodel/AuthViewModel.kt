@@ -35,12 +35,14 @@ class AuthViewModel : ViewModel() {
                 val body = response.body()
 
                 if (response.isSuccessful && body?.message == "Login Success") {
-                    // Lưu token nếu cần
+                    // ✅ Lưu token vào SharedPreferences
+                    val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
+                    prefs.edit().putString("jwt_token", body.token).apply()
 
                     if (body.is_admin) {
-                        onAdminSuccess() // chuyển sang màn admin
+                        onAdminSuccess()
                     } else {
-                        onUserSuccess() // chuyển sang màn user
+                        onUserSuccess()
                     }
                 } else {
                     errorMessage = body?.message ?: "Login failed"
@@ -52,9 +54,12 @@ class AuthViewModel : ViewModel() {
             }
         }
     }
+
     fun getToken(): String? {
-        return sharedPreferences.getString("jwt_token", null)
+        val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
+        return prefs.getString("jwt_token", null)
     }
+
 
     fun isLoggedIn(): Boolean {
         return getToken() != null
@@ -62,8 +67,9 @@ class AuthViewModel : ViewModel() {
 
     fun logout(onComplete: () -> Unit) {
         val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
-        prefs.edit().remove("token").apply()
+        prefs.edit().remove("jwt_token").apply()
         onComplete()
     }
+
 
 }

@@ -38,7 +38,7 @@ class   BookViewModel: ViewModel() {
             }
         }
     }
-    fun deleteBook(bookId: String) {
+    fun deleteBook(bookId: Int) {
         viewModelScope.launch {
             try {
                // RetrofitService.adminManagerApi.deleteBook(bookId)// chưa viet api

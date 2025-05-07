@@ -27,12 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.R
-import com.sporticast.dto.request.LoginRequest
-import com.sporticast.screens.data.api.RetrofitService
-import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.AuthViewModel
-import kotlinx.coroutines.launch
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sporticast.ui.theme.colorLg_Rg
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewModel()) {
@@ -105,18 +102,15 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewMod
                         viewModel.login(
                             onAdminSuccess = {
                                 navController.navigate("adminScreen") {
-                                    popUpTo("login") { inclusive = true }
+                                    popUpTo(0) { inclusive = true }
                                 }
                             },
                             onUserSuccess = {
                                 navController.navigate("homeScreen") {
-                                    popUpTo("login") { inclusive = true }
+                                    popUpTo(0) { inclusive = true }
                                 }
                             }
                         )
-
-
-
                     },
                     modifier = Modifier
                         .width(160.dp)
@@ -145,24 +139,80 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewMod
                     )
                 }
 
+                Spacer(Modifier.height(16.dp))
+
+                Text(
+                    text = "Forgot the password?",
+                    color = Color(0xFF00E676),
+                    fontSize = 14.sp,
+                    modifier = Modifier.clickable {
+                        // TODO: Chuyển đến màn hình quên mật khẩu
+                    }
+                )
+
+                Spacer(Modifier.height(24.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Divider(modifier = Modifier.weight(1f), color = Color.Gray)
+                    Text(
+                        text = "  or continue with  ",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+                    Divider(modifier = Modifier.weight(1f), color = Color.Gray)
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    val buttonSize = 48.dp
+                    listOf(
+                        R.drawable.ic_facebook to "Facebook",
+                        R.drawable.ic_google to "Google",
+                        R.drawable.ic_apple to "Apple"
+                    ).forEach { (iconRes, contentDesc) ->
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .background(Color.White, shape = RoundedCornerShape(12.dp))
+                                .border(1.dp, Color.LightGray, shape = RoundedCornerShape(12.dp))
+                                .clickable { /* TODO: Social login */ },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(iconRes),
+                                contentDescription = contentDesc,
+                                modifier = Modifier.size(48.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
+
+                    }
+                }
+
                 Spacer(Modifier.height(24.dp))
 
                 Text(
                     buildAnnotatedString {
                         append("Don't have an account? ")
                         withStyle(
-                            SpanStyle(
-                                color = Color(0xFF00E676),
-                                fontWeight = FontWeight.Bold
-                            )
+                            SpanStyle(color = Color(0xFF00E676), fontWeight = FontWeight.Bold)
                         ) {
-                            append("Register")
+                            append("Sign up")
                         }
                     },
                     fontSize = 16.sp,
                     color = Color.White,
                     modifier = Modifier.clickable {
-                        navController.navigate("register")
+                        navController.navigate("registerScreen") {
+                            popUpTo("loginScreen") { inclusive = true }
+                        }
                     }
                 )
             }
@@ -196,4 +246,3 @@ fun AuthTextField(
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
-

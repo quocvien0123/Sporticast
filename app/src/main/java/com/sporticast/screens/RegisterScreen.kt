@@ -185,7 +185,9 @@ fun RegisterScreen(navController: NavController) {
                                     )
                                 )
                                 isLoading = false
-                                navController.navigate("login")
+                                navController.navigate("loginScreen") {
+                                    popUpTo("registerScreen") { inclusive = true }
+                                }
 
 
                             }catch (e: Exception) {
@@ -235,7 +237,9 @@ fun RegisterScreen(navController: NavController) {
                     color = Color.White,
                     fontSize = 14.sp,
                     modifier = Modifier.clickable {
-                        navController.navigate("login")
+                        navController.navigate("loginScreen") {
+                            popUpTo("registerScreen") { inclusive = true }
+                        }
                     }
                 )
             }

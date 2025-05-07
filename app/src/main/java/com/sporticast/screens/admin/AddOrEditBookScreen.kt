@@ -101,7 +101,7 @@ fun AddOrEditBookScreen(
                         language = language,
                         listenCount = listenCount,
                         rating = rating.toFloat(),
-                        id = id
+                        id = id.toString()
                     )
                     onSave(bookRequest)
                 },
