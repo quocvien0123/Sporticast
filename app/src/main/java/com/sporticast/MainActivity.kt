@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigator() {
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "adminScreen") { // chinh lai wellcomeScreen sau khi hoan thanh
+    NavHost(navController, startDestination = "register") { // chinh lai wellcomeScreen sau khi hoan thanh
         composable("profile") {
             ProfileScreen(navController)
         }
@@ -95,8 +95,8 @@ fun AppNavigator() {
 
 
 
-//        composable("login") { LoginScreen(navController) }
-//        composable("register") { RegisterScreen(navController) }
+        composable("login") { LoginScreen(navController) }
+        composable("register") { RegisterScreen(navController) }
         composable("homeScreen") { HomeScreen(navController) }
         composable("adminScreen") { AdminDrawerScreen(navController) }
 //        composable("welcomeScreen") { WelcomeScreen(navController) }
