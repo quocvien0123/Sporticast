@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
 import com.sporticast.screens.FavoritesScreen
 import com.sporticast.screens.home.HomeScreen
@@ -19,6 +20,7 @@ import com.sporticast.screens.LoginScreen
 import com.sporticast.screens.ProfileScreen
 import com.sporticast.screens.RegisterScreen
 import com.sporticast.screens.WelcomeScreen
+import com.sporticast.screens.admin.AddOrEditBookScreen
 import com.sporticast.screens.admin.AdminDrawerScreen
 import com.sporticast.screens.home.AudiobookDetailScreen
 import com.sporticast.screens.home.PlayerScreen
@@ -56,6 +58,9 @@ fun AppNavigator() {
         composable("admin") {
             AdminDrawerScreen(navController)
         }
+
+
+
         composable(
             route = "player/{title}/{author}/{duration}/{audioUrl}",
             arguments = listOf(
@@ -71,22 +76,41 @@ fun AppNavigator() {
             val encodedAudioUrl = backStackEntry.arguments?.getString("audioUrl") ?: ""
             val audioUrl = URLDecoder.decode(encodedAudioUrl, StandardCharsets.UTF_8.toString())
 
-            PlayerScreen(title = title,
+            PlayerScreen(
+                title = title,
                 author = author,
                 duration = duration,
                 audioUrl = audioUrl,
                 navController = navController)
         }
+        composable ("addOrEditBook"){
+            AddOrEditBookScreen(onSave = { BookRequest ->
+                // Todo: Save the book
+                navController.popBackStack()
+            })
+        }
+        composable(
+            "addOrEditBook/{bookJson}",
+            arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
+        )
+        { backStackEntry ->
+            val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
+            val book = Json.decodeFromString<Book>(URLDecoder.decode(bookJson, StandardCharsets.UTF_8.toString()))
+
+            AddOrEditBookScreen(book = book, onSave = { bookRequest ->
+                // TODO: Gửi dữ liệu cập nhật tới ViewModel
+                navController.popBackStack()
+            })
+        }
         composable(
             route = "audiobookDetail/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
-        ) { backStackEntry ->
+        )
+        { backStackEntry ->
             val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
-
             val bookState = produceState<Book?>(initialValue = null, bookJson) {
                 value = Json.decodeFromString<Book>(bookJson)
             }
-
             bookState.value?.let { book ->
                 AudiobookDetailScreen(book = book, navController = navController)
             }
