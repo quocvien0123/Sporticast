@@ -45,8 +45,8 @@ android {
 
 dependencies {
 
-    implementation ("androidx.compose.material:material-icons-extended:1.5.0")
-    implementation ("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,8 +54,8 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation ("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.room:room-runtime:2.6.1")//
+    implementation("androidx.compose.material3:material3:1.2.1") // Sửa lại phiên bản chính thức
+    implementation("androidx.room:room-runtime:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     testImplementation(libs.junit)
@@ -65,16 +65,15 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation ("androidx.room:room-ktx:2.5.0")
-    implementation("androidx.compose.material3:material3:1.2.0")
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("androidx.room:room-ktx:2.5.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation ("com.google.accompanist:accompanist-pager:0.34.0")
-    implementation ("com.google.accompanist:accompanist-pager-indicators:0.34.0")
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("com.google.accompanist:accompanist-pager:0.34.0")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.34.0")
+    implementation("io.coil-kt:coil-compose:2.2.2") // Có thể loại bỏ dòng này nếu không cần thiết
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
+
 
 
 
