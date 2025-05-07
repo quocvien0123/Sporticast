@@ -24,6 +24,7 @@ import com.sporticast.screens.admin.AddOrEditBookScreen
 import com.sporticast.screens.admin.AdminDrawerScreen
 import com.sporticast.screens.home.AudiobookDetailScreen
 import com.sporticast.screens.home.PlayerScreen
+import com.sporticast.viewmodel.AuthViewModel
 
 import com.sporticast.viewmodel.HomeViewModel
 import kotlinx.serialization.decodeFromString
@@ -44,22 +45,34 @@ class MainActivity : ComponentActivity() {
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AppNavigator() {
+    val authViewModel: AuthViewModel = viewModel()
+    val startDest = if (authViewModel.isLoggedIn()) "homeScreen" else "loginScreen"
     val navController = rememberNavController()
-    NavHost(navController, startDestination = "register") { // chinh lai wellcomeScreen sau khi hoan thanh
+    NavHost(
+        navController,
+        startDestination = startDest
+    ) {
+
         composable("profile") {
             ProfileScreen(navController)
         }
-        composable("home") {
-            HomeScreen(navController)
-        }
+
         composable("favorites") {
             FavoritesScreen(navController)
         }
-        composable("admin") {
+
+        composable("loginScreen") {
+            LoginScreen(navController)
+        }
+        composable("registerScreen") {
+            RegisterScreen(navController)
+        }
+        composable("homeScreen") {
+            HomeScreen(navController)
+        }
+        composable("adminScreen") {
             AdminDrawerScreen(navController)
         }
-
-
 
         composable(
             route = "player/{title}/{author}/{duration}/{audioUrl}",
@@ -81,9 +94,10 @@ fun AppNavigator() {
                 author = author,
                 duration = duration,
                 audioUrl = audioUrl,
-                navController = navController)
+                navController = navController
+            )
         }
-        composable ("addOrEditBook"){
+        composable("addOrEditBook") {
             AddOrEditBookScreen(onSave = { BookRequest ->
                 // Todo: Save the book
                 navController.popBackStack()
@@ -95,7 +109,12 @@ fun AppNavigator() {
         )
         { backStackEntry ->
             val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
-            val book = Json.decodeFromString<Book>(URLDecoder.decode(bookJson, StandardCharsets.UTF_8.toString()))
+            val book = Json.decodeFromString<Book>(
+                URLDecoder.decode(
+                    bookJson,
+                    StandardCharsets.UTF_8.toString()
+                )
+            )
 
             AddOrEditBookScreen(book = book, onSave = { bookRequest ->
                 // TODO: Gửi dữ liệu cập nhật tới ViewModel
@@ -118,12 +137,6 @@ fun AppNavigator() {
         }
 
 
-
-        composable("login") { LoginScreen(navController) }
-        composable("register") { RegisterScreen(navController) }
-        composable("homeScreen") { HomeScreen(navController) }
-        composable("adminScreen") { AdminDrawerScreen(navController) }
-//        composable("welcomeScreen") { WelcomeScreen(navController) }
     }
 }
 

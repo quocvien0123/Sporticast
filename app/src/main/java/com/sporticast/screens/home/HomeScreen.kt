@@ -108,8 +108,10 @@ fun HomeScreen(
                     onSettingsMenuChange = { showSettingsMenu = it },
                     onLogout = {
                         authViewModel.logout {
-                            navController.navigate("login") {
-                                popUpTo("home") { inclusive = true }
+                            navController.navigate("loginScreen") {
+                                popUpTo(0) {
+                                    inclusive = true
+                                }
                             }
                         }
                     }
