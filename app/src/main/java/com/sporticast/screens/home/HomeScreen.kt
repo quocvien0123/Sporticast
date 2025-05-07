@@ -1,5 +1,6 @@
 package com.sporticast.screens.home
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sporticast.ui.theme.colorLg_Rg
+import com.sporticast.viewmodel.AuthViewModel
 import com.sporticast.viewmodel.HomeViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -24,7 +26,10 @@ import java.nio.charset.StandardCharsets
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    authViewModel:  AuthViewModel = viewModel()
+) {
     val imageUrls = listOf(
         // Atomic Habits - James Clear
         "https://cdn1.fahasa.com/media/catalog/product/8/9/8935270703691_1.jpg",
@@ -72,9 +77,6 @@ fun HomeScreen(navController: NavController) {
     }
 
 
-
-
-
     val gradientBrush = Brush.verticalGradient(colors = colorLg_Rg)
 
     var showProfileMenu by remember { mutableStateOf(false) }
@@ -85,7 +87,7 @@ fun HomeScreen(navController: NavController) {
         modifier = Modifier
             .fillMaxSize()
             .background(gradientBrush)
-    ){
+    ) {
         Scaffold(
             bottomBar = {
                 BottomNavigationBar(navController)
@@ -105,8 +107,10 @@ fun HomeScreen(navController: NavController) {
                     onNotificationMenuChange = { showNotificationMenu = it },
                     onSettingsMenuChange = { showSettingsMenu = it },
                     onLogout = {
-                        navController.navigate("login") {
-                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
+                        authViewModel.logout {
+                            navController.navigate("login") {
+                                popUpTo("home") { inclusive = true }
+                            }
                         }
                     }
                 )
@@ -142,14 +146,16 @@ fun HomeScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(40.dp))
 
 
-
                     }
 
                     items(filteredBooks) { book ->
                         FeaturedContentItem(
                             book = book,
                             onClick = {
-                                val bookJson = URLEncoder.encode(Json.encodeToString(book), StandardCharsets.UTF_8.toString())
+                                val bookJson = URLEncoder.encode(
+                                    Json.encodeToString(book),
+                                    StandardCharsets.UTF_8.toString()
+                                )
                                 navController.navigate("audiobookDetail/$bookJson")
                             }
                         )
