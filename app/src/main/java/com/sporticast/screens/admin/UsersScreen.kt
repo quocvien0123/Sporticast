@@ -22,7 +22,7 @@ import com.sporticast.viewmodel.UsersViewModel
 
 @Composable
 fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
-    val users = viewModel.users.collectAsState().value
+    val users = viewModel.loadUser.collectAsState().value
     val cardColor = Color(0xFF2A3B4C).copy(alpha = 0.95f)
 
     LazyColumn(
@@ -44,16 +44,16 @@ fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(
-                            model = user.avatar ?: "https://i.pravatar.cc/150?img=1"
-                        ),
-                        contentDescription = "Avatar",
-                        modifier = Modifier
-                            .size(56.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
+//                    Image(
+//                        painter = rememberAsyncImagePainter(
+//                            model = user.avatar ?: "https://i.pravatar.cc/150?img=1"
+//                        ),
+//                        contentDescription = "Avatar",
+//                        modifier = Modifier
+//                            .size(56.dp)
+//                            .clip(CircleShape),
+//                        contentScale = ContentScale.Crop
+//                    )
 
                     Spacer(modifier = Modifier.width(16.dp))
 
@@ -72,7 +72,7 @@ fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
                             fontSize = 14.sp
                         )
                         Text(
-                            text = "👑 ${user.role ?: "user"}",
+                            text = "👑 ${user.role ?: ""}",
                             color = Color(0xFFB3E5FC),
                             fontSize = 13.sp
                         )

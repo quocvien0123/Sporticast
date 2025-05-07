@@ -32,7 +32,7 @@ fun AdminDrawerScreen(
 
     val menuItems = listOf(
         MenuItemData("Người dùng", Icons.Default.Person),
-        MenuItemData("Vai trò", Icons.Default.Security),
+        MenuItemData("Sách nói điện tử", Icons.Default.Book),
         MenuItemData("Cài đặt", Icons.Default.Settings),
         MenuItemData("Đăng xuất", Icons.Default.ExitToApp)
     )
@@ -123,7 +123,7 @@ fun AdminDrawerScreen(
             ) {
                 when (selectedItem) {
                     "Người dùng" -> UsersScreen()
-                    "Vai trò" -> Text("📋 Danh sách vai trò", color = Color.White)
+                    "Sách nói điện tử" -> BooksScreen(navController = navController)
                     "Cài đặt" -> Text("⚙️ Cài đặt hệ thống", color = Color.White)
                     "Đăng xuất" -> Text("🚪 Đăng xuất...", color = Color.White)
                 }
