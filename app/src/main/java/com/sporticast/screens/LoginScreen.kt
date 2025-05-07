@@ -188,7 +188,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewMod
                             Icon(
                                 painter = painterResource(iconRes),
                                 contentDescription = contentDesc,
-                                modifier = Modifier.size(48.dp),
+                                modifier = Modifier.size(40.dp),
                                 tint = Color.Unspecified
                             )
                         }
