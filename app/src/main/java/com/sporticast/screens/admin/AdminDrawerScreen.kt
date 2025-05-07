@@ -15,12 +15,17 @@ import com.sporticast.ui.theme.colorLg_Rg
 import kotlinx.coroutines.launch
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sporticast.viewmodel.AuthViewModel
 
 data class MenuItemData(val title: String, val icon: ImageVector)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminDrawerScreen(navController: NavController) {
+fun AdminDrawerScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel = viewModel()
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedItem by remember { mutableStateOf("Người dùng") }
@@ -66,7 +71,11 @@ fun AdminDrawerScreen(navController: NavController) {
                                 selectedItem = item.title
                                 scope.launch { drawerState.close() }
                                 if (item.title == "Đăng xuất") {
-                                    navController.navigate("homeScreen")
+                                    authViewModel.logout {
+                                        navController.navigate("login") {
+                                            popUpTo("home") { inclusive = true }
+                                        }
+                                    }
                                 }
                             },
                             colors = NavigationDrawerItemDefaults.colors(
@@ -92,7 +101,11 @@ fun AdminDrawerScreen(navController: NavController) {
                     title = { Text(selectedItem, color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = "Menu",
+                                tint = Color.White
+                            )
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
