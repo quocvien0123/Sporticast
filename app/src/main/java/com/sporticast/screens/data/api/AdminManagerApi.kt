@@ -22,7 +22,10 @@ interface AdminManagerApi {
 
     @PUT("admin/audiobooks/{id}")
     suspend fun updateBook(
-        @Path("id") id: Long,
+        @Path("id") id: Int,
         @Body book: BookRequest
-    ): Response<BookRequest>
+    ): Response<Book>
+
+
+
 }

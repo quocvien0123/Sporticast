@@ -23,11 +23,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.sporticast.screens.home.BottomNavigationBar
 import com.sporticast.ui.theme.colorLg_Rg
-import com.sporticast.viewmodel.ProfileViewModel
 
 @Composable
 fun ProfileScreen(navController: NavController,
-                  profileViewModel: ProfileViewModel
                   ) {
     Scaffold(
         bottomBar = {

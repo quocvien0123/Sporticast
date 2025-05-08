@@ -113,21 +113,18 @@ fun AppNavigator() {
         composable(
             "addOrEditBook/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
-        )
-        { backStackEntry ->
+        ) { backStackEntry ->
             val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
             val book = Json.decodeFromString<Book>(
-                URLDecoder.decode(
-                    bookJson,
-                    StandardCharsets.UTF_8.toString()
-                )
+                URLDecoder.decode(bookJson, StandardCharsets.UTF_8.toString())
             )
 
             AddOrEditBookScreen(book = book, onSave = { bookRequest ->
-                // TODO: Gửi dữ liệu cập nhật tới ViewModel
+                // gửi dữ liệu cập nhật
                 navController.popBackStack()
             })
         }
+
         composable(
             route = "audiobookDetail/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
