@@ -12,16 +12,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.ui.unit.sp
+import com.sporticast.screens.data.api.RetrofitService
 import com.sporticast.ui.theme.colorLg_Rg
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddOrEditBookScreen(
     book: Book? = null,
-    onSave: (BookRequest) -> Unit
+    onSave: (BookRequest) -> Unit = {}
 ) {
     var title by remember { mutableStateOf(book?.title ?: "") }
     var author by remember { mutableStateOf(book?.author ?: "") }
@@ -35,9 +36,11 @@ fun AddOrEditBookScreen(
     var listenCount by remember { mutableStateOf(book?.listenCount ?: 0) }
     var id by remember { mutableStateOf(book?.id ?: "") }
 
-    // Define snackbar state
     var snackbarMessage by remember { mutableStateOf("") }
     var showSnackbar by remember { mutableStateOf(false) }
+
+    val coroutineScope = rememberCoroutineScope()
+
 
     Box(
         modifier = Modifier
@@ -75,8 +78,8 @@ fun AddOrEditBookScreen(
                     shape = RoundedCornerShape(14.dp),
                     textStyle = LocalTextStyle.current.copy(
                         color = Color.White,
-                        fontSize = 16.sp,
-                    ),
+                        fontSize = 16.sp
+                    )
                 )
             }
 
@@ -111,15 +114,12 @@ fun AddOrEditBookScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = {
-                        // Validate fields
                         if (title.isEmpty() || author.isEmpty() || category.isEmpty() || audioUrl.isEmpty() ||
                             description.isEmpty() || duration.isEmpty() || imageUrl.isEmpty() || language.isEmpty()
                         ) {
-                            // Show error message if any field is empty
                             snackbarMessage = "Vui lòng điền đầy đủ thông tin"
                             showSnackbar = true
                         } else {
-                            // Save book if all fields are valid
                             val bookRequest = BookRequest(
                                 title = title,
                                 author = author,
@@ -131,9 +131,24 @@ fun AddOrEditBookScreen(
                                 language = language,
                                 listenCount = listenCount,
                                 rating = rating.toFloat(),
-                                id = id.toString()
+                              //  id = id
                             )
-                            onSave(bookRequest)
+
+                            coroutineScope.launch {
+                                try {
+                                    val response =
+                                        RetrofitService.adminManagerApi.addAudiobook(bookRequest)
+                                    snackbarMessage = if (response.isSuccessful) {
+                                        "✅ Sách đã được lưu thành công"
+                                    } else {
+                                        "❌ Lỗi khi lưu sách: ${response.message()}"
+                                    }
+                                } catch (e: Exception) {
+                                    snackbarMessage = "⚠️ Lỗi mạng: ${e.localizedMessage}"
+                                }
+                                showSnackbar = true
+                            }
+
                         }
                     },
                     modifier = Modifier
@@ -146,7 +161,6 @@ fun AddOrEditBookScreen(
             }
         }
 
-        // Display Snackbar if needed
         if (showSnackbar) {
             Snackbar(
                 modifier = Modifier.padding(16.dp),
