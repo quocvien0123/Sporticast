@@ -13,7 +13,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sporticast.R
@@ -42,14 +45,14 @@ fun HomeTopBar(
                         .padding(end = 8.dp)
                         .clip(CircleShape)
                 )
-                Icon(
-                    imageVector = Icons.Default.Warehouse,
-                    contentDescription = "Headset",
-                    tint = Color.White,
-                    modifier = Modifier
-                        .size(30.dp)
-                        .padding(end = 1.dp)
-                        .padding(start = 1.dp)
+                Text(
+                    buildAnnotatedString {
+                        append("Sposti")
+                        withStyle(SpanStyle(color = Color.White)) { append("Cash") }
+                    },
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF00C853)
                 )
             }
         },

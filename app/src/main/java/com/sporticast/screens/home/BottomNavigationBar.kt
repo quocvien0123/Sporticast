@@ -35,7 +35,9 @@ fun BottomNavigationBar(navController: NavController) {
             icon = { Icon(Icons.Default.Home, contentDescription = "Trang chủ") },
             label = { Text("Home") },
             selected = true,
-            onClick = { navController.navigate("home") },
+            onClick = { navController.navigate("homeScreen"){
+                launchSingleTop = true
+            } },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = Color.White,
                 selectedTextColor = Color.White,

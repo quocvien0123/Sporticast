@@ -44,16 +44,16 @@ fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-//                    Image(
-//                        painter = rememberAsyncImagePainter(
-//                            model = user.avatar ?: "https://i.pravatar.cc/150?img=1"
-//                        ),
-//                        contentDescription = "Avatar",
-//                        modifier = Modifier
-//                            .size(56.dp)
-//                            .clip(CircleShape),
-//                        contentScale = ContentScale.Crop
-//                    )
+                    Image(
+                        painter = rememberAsyncImagePainter(
+                            model = user.avatar
+                        ),
+                        contentDescription = "Avatar",
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
 
                     Spacer(modifier = Modifier.width(16.dp))
 

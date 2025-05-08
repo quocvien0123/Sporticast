@@ -47,20 +47,6 @@ fun HomeScreen(
         // Rich Dad Poor Dad - Robert T. Kiyosaki
         "https://m.media-amazon.com/images/I/81bsw6fnUiL._AC_UF1000,1000_QL80_.jpg",
 
-        // Tôi thấy hoa vàng trên cỏ xanh
-        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974155274.jpg",
-
-        // Cô gái đến từ hôm qua
-        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974173445.jpg",
-
-        // Cho tôi xin một vé đi tuổi thơ
-        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974158015.jpg",
-
-        // Ngồi khóc trên cây
-        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974149105.jpg",
-
-        // Bảy bước tới mùa hè
-        "https://cdn0.fahasa.com/media/catalog/product/8/9/8934974138772.jpg"
     )
 
     val viewModel: HomeViewModel = viewModel()

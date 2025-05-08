@@ -55,10 +55,12 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+
     fun getToken(): String? {
         val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
         return prefs.getString("jwt_token", null)
     }
+
 
 
     fun isLoggedIn(): Boolean {
@@ -71,5 +73,9 @@ class AuthViewModel : ViewModel() {
         onComplete()
     }
 
+    fun isAdmin(): Boolean {
+        val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
+        return prefs.getBoolean("is_admin", false)
+    }
 
 }

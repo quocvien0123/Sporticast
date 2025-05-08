@@ -18,15 +18,16 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ImageCarouselFromUrls(imageUrls: List<String>) {
-
     val pagerState = rememberPagerState()
     val pageCount = imageUrls.size
-    val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = pagerState.currentPage) {
-        delay(5000)
-        val nextPage = (pagerState.currentPage + 1) % pageCount
-        pagerState.animateScrollToPage(nextPage)
+    // Tự động chuyển trang mỗi 5 giây
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(5000)
+            val nextPage = (pagerState.currentPage + 1) % pageCount
+            pagerState.animateScrollToPage(nextPage)
+        }
     }
 
     Column {
@@ -46,10 +47,8 @@ fun ImageCarouselFromUrls(imageUrls: List<String>) {
                 AsyncImage(
                     model = imageUrls[page],
                     contentDescription = null,
-                    contentScale = ContentScale.Fit, // Không cắt ảnh
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
+                    contentScale = ContentScale.Crop, // Ảnh lấp đầy và cắt nếu cần
+                    modifier = Modifier.fillMaxSize() // Không dùng padding
                 )
             }
         }

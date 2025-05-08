@@ -46,7 +46,14 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigator() {
     val authViewModel: AuthViewModel = viewModel()
-    val startDest = if (authViewModel.isLoggedIn()) "homeScreen" else "loginScreen"
+    val isAdmin = authViewModel.isAdmin()
+    val isLoggedIn = authViewModel.isLoggedIn()
+
+    val startDest = when {
+        !isLoggedIn -> "loginScreen"
+        isAdmin -> "adminScreen"
+        else -> "homeScreen"
+    }
     val navController = rememberNavController()
     NavHost(
         navController,
