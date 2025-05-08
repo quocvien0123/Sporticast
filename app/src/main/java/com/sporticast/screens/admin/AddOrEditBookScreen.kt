@@ -1,5 +1,6 @@
 package com.sporticast.screens.admin
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,12 +19,15 @@ import com.sporticast.model.Book
 import com.sporticast.screens.data.api.RetrofitService
 import com.sporticast.ui.theme.colorLg_Rg
 import kotlinx.coroutines.launch
+import kotlin.math.log
 
 @Composable
 fun AddOrEditBookScreen(
     book: Book? = null,
-    onSave: (BookRequest) -> Unit = {}
-) {
+    onSave: (BookRequest) -> Unit = {},
+
+    ) {
+
     var title by remember { mutableStateOf(book?.title ?: "") }
     var author by remember { mutableStateOf(book?.author ?: "") }
     var category by remember { mutableStateOf(book?.category ?: "") }
@@ -34,13 +38,11 @@ fun AddOrEditBookScreen(
     var rating by remember { mutableStateOf(book?.rating ?: 0.0) }
     var language by remember { mutableStateOf(book?.language ?: "") }
     var listenCount by remember { mutableStateOf(book?.listenCount ?: 0) }
-    var id by remember { mutableStateOf(book?.id ?: "") }
 
     var snackbarMessage by remember { mutableStateOf("") }
     var showSnackbar by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
-
 
     Box(
         modifier = Modifier
@@ -48,12 +50,10 @@ fun AddOrEditBookScreen(
             .background(Brush.verticalGradient(colorLg_Rg))
             .padding(16.dp)
     ) {
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             item {
                 Text(
-                    text = "📚 Thông tin sách",
+                    text = if (book != null) "✏️ Chỉnh sửa sách" else "📚 Thêm sách mới",
                     style = MaterialTheme.typography.headlineSmall,
                     color = Color.White
                 )
@@ -114,41 +114,50 @@ fun AddOrEditBookScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     onClick = {
-                        if (title.isEmpty() || author.isEmpty() || category.isEmpty() || audioUrl.isEmpty() ||
-                            description.isEmpty() || duration.isEmpty() || imageUrl.isEmpty() || language.isEmpty()
+                        if (title.isBlank() || author.isBlank() || category.isBlank() ||
+                            audioUrl.isBlank() || description.isBlank() || duration.isBlank() ||
+                            imageUrl.isBlank() || language.isBlank()
                         ) {
-                            snackbarMessage = "Vui lòng điền đầy đủ thông tin"
+                            snackbarMessage = "⚠️ Vui lòng điền đầy đủ thông tin"
                             showSnackbar = true
                         } else {
                             val bookRequest = BookRequest(
-                                title = title,
-                                author = author,
-                                category = category,
-                                audioUrl = audioUrl,
-                                description = description,
-                                duration = duration,
-                                imageUrl = imageUrl,
-                                language = language,
-                                listenCount = listenCount,
-                                rating = rating.toFloat(),
-                              //  id = id
+                                title,
+                                author,
+                                category,
+                                audioUrl,
+                                description,
+                                duration,
+                                imageUrl,
+                                language,
+                                listenCount,
+                                rating.toFloat(),
                             )
+
 
                             coroutineScope.launch {
                                 try {
-                                    val response =
-                                        RetrofitService.adminManagerApi.addAudiobook(bookRequest)
-                                    snackbarMessage = if (response.isSuccessful) {
-                                        "✅ Sách đã được lưu thành công"
+                                    val response = if (book != null) {
+                                        RetrofitService.adminManagerApi.updateBook(
+                                            id = book.id,
+                                            book = bookRequest
+                                        )
                                     } else {
-                                        "❌ Lỗi khi lưu sách: ${response.message()}"
+                                        RetrofitService.adminManagerApi.addAudiobook(bookRequest)
+                                    }
+
+                                    snackbarMessage = if (response.isSuccessful) {
+                                        if (book != null) "✅ Đã cập nhật sách thành công"
+                                        else "✅ Đã thêm sách thành công"
+                                    } else {
+                                        println("❌ Error Body: ${response.errorBody()?.string()}")
+                                        "❌ Lỗi khi thực hiện yêu cầu"
                                     }
                                 } catch (e: Exception) {
                                     snackbarMessage = "⚠️ Lỗi mạng: ${e.localizedMessage}"
                                 }
                                 showSnackbar = true
                             }
-
                         }
                     },
                     modifier = Modifier
@@ -156,7 +165,7 @@ fun AddOrEditBookScreen(
                         .height(56.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("💾 Lưu sách")
+                    Text(if (book != null) "💾 Cập nhật" else "➕ Thêm sách")
                 }
             }
         }

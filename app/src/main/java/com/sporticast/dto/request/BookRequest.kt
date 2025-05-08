@@ -11,6 +11,4 @@ data class BookRequest(
     val language: String,
     val listenCount: Int,
     val rating: Float,
-   // val id: String
 )
-
