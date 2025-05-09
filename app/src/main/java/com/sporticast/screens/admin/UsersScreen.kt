@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +25,10 @@ import com.sporticast.viewmodel.UsersViewModel
 fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
     val users = viewModel.loadUser.collectAsState().value
     val cardColor = Color(0xFF2A3B4C).copy(alpha = 0.95f)
+
+    LaunchedEffect(Unit) {
+        viewModel.loadUser()
+    }
 
     LazyColumn(
         modifier = Modifier

@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
 import com.sporticast.screens.data.api.RetrofitService
@@ -25,7 +26,7 @@ import kotlin.math.log
 fun AddOrEditBookScreen(
     book: Book? = null,
     onSave: (BookRequest) -> Unit = {},
-
+    navController: NavController,
     ) {
 
     var title by remember { mutableStateOf(book?.title ?: "") }
@@ -146,10 +147,13 @@ fun AddOrEditBookScreen(
                                         RetrofitService.adminManagerApi.addAudiobook(bookRequest)
                                     }
 
-                                    snackbarMessage = if (response.isSuccessful) {
-                                        if (book != null) "✅ Đã cập nhật sách thành công"
-                                        else "✅ Đã thêm sách thành công"
-                                    } else {
+                                    if (response.isSuccessful) {
+                                        navController.previousBackStackEntry
+                                            ?.savedStateHandle
+                                            ?.set("bookAddResult", "success")
+
+                                        navController.popBackStack()
+                                } else {
                                         println("❌ Error Body: ${response.errorBody()?.string()}")
                                         "❌ Lỗi khi thực hiện yêu cầu"
                                     }

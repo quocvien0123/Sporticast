@@ -17,7 +17,7 @@ class   BookViewModel: ViewModel() {
     private val _loadBook = MutableStateFlow<List<Book>>(emptyList())
     val loadBook: StateFlow<List<Book>> = _loadBook.asStateFlow()
 
-    private fun loadBook() {
+    fun loadBook() {
         viewModelScope.launch {
             try {
                 val response = RetrofitService.adminManagerApi.getAllAudiobooks()

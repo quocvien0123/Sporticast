@@ -15,7 +15,7 @@ class UsersViewModel : ViewModel() {
     private val _loadUser = MutableStateFlow<List<User>>(emptyList())
     val loadUser: StateFlow<List<User>> = _loadUser.asStateFlow()
 
-    private fun loadUser() {
+    fun loadUser() {
         viewModelScope.launch {
             try {
                 val response = RetrofitService.adminManagerApi.getAllUsers()

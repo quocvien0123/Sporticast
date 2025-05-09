@@ -3,20 +3,19 @@ package com.sporticast.screens.admin
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sporticast.ui.theme.colorLg_Rg
-import kotlinx.coroutines.launch
-import androidx.compose.material.icons.filled.*
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sporticast.viewmodel.AuthViewModel
+import kotlinx.coroutines.launch
 
 data class MenuItemData(val title: String, val icon: ImageVector)
 
@@ -29,6 +28,23 @@ fun AdminDrawerScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedItem by remember { mutableStateOf("Người dùng") }
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    // Lắng nghe StateFlow từ SavedStateHandle
+    val resultFlow = navController
+        .currentBackStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("bookAddResult", "")
+
+    val resultValue by resultFlow?.collectAsState() ?: remember { mutableStateOf("") }
+
+    if (resultValue == "success") {
+        LaunchedEffect(resultValue) {
+            snackbarHostState.showSnackbar("📘 Thêm sách thành công!")
+            navController.currentBackStackEntry?.savedStateHandle?.set("bookAddResult", "")
+        }
+    }
 
     val menuItems = listOf(
         MenuItemData("Người dùng", Icons.Default.Person),
@@ -73,9 +89,7 @@ fun AdminDrawerScreen(
                                 if (item.title == "Đăng xuất") {
                                     authViewModel.logout {
                                         navController.navigate("loginScreen") {
-                                            popUpTo(0) {
-                                                inclusive = true
-                                            }
+                                            popUpTo(0) { inclusive = true }
                                         }
                                     }
                                 }
@@ -91,23 +105,19 @@ fun AdminDrawerScreen(
                                 .fillMaxWidth()
                         )
                     }
-
                 }
             }
         }
     ) {
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
                     title = { Text(selectedItem, color = Color.White) },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                Icons.Default.Menu,
-                                contentDescription = "Menu",
-                                tint = Color.White
-                            )
+                            Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(

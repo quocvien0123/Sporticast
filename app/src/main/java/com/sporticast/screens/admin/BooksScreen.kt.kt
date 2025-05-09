@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,9 @@ import kotlinx.serialization.json.Json
 @Composable
 fun BooksScreen(viewModel: BookViewModel = viewModel(),
                 navController: NavController)  {
+    LaunchedEffect(Unit) {
+        viewModel.loadBook()
+    }
     val books = viewModel.loadBook.collectAsState().value
 
     Box(modifier = Modifier.fillMaxSize()) {
