@@ -3,9 +3,12 @@ package com.sporticast.screens.admin
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -14,21 +17,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
 import com.sporticast.screens.data.api.RetrofitService
 import com.sporticast.ui.theme.colorLg_Rg
+import com.sporticast.viewmodel.BookViewModel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.log
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddOrEditBookScreen(
     book: Book? = null,
-    onSave: (BookRequest) -> Unit = {},
     navController: NavController,
-    ) {
-
+    viewModel: BookViewModel = viewModel()
+) {
+    val coroutineScope = rememberCoroutineScope()
     var title by remember { mutableStateOf(book?.title ?: "") }
     var author by remember { mutableStateOf(book?.author ?: "") }
     var category by remember { mutableStateOf(book?.category ?: "") }
@@ -36,154 +43,193 @@ fun AddOrEditBookScreen(
     var description by remember { mutableStateOf(book?.description ?: "") }
     var duration by remember { mutableStateOf(book?.duration ?: "") }
     var imageUrl by remember { mutableStateOf(book?.imageUrl ?: "") }
-    var rating by remember { mutableStateOf(book?.rating ?: 0.0) }
     var language by remember { mutableStateOf(book?.language ?: "") }
     var listenCount by remember { mutableStateOf(book?.listenCount ?: 0) }
-
-    var snackbarMessage by remember { mutableStateOf("") }
+    var rating by remember { mutableFloatStateOf(book?.rating ?: 0f) }
     var showSnackbar by remember { mutableStateOf(false) }
+    var snackbarMessage by remember { mutableStateOf("") }
 
-    val coroutineScope = rememberCoroutineScope()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(colorLg_Rg))
-            .padding(16.dp)
-    ) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            item {
-                Text(
-                    text = if (book != null) "✏️ Chỉnh sửa sách" else "📚 Thêm sách mới",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Color.White
-                )
-            }
+    // Màu sắc cho TextField (Material 3)
+    val textFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedTextColor = Color.White,
+        unfocusedTextColor = Color.White,
+        cursorColor = Color.White,
+        focusedBorderColor = Color.Cyan,
+        unfocusedBorderColor = Color.LightGray,
+        focusedLabelColor = Color.Cyan,
+        unfocusedLabelColor = Color.LightGray
+    )
 
-            @Composable
-            fun inputCard(
-                label: String,
-                value: String,
-                onChange: (String) -> Unit,
-                keyboardType: KeyboardType = KeyboardType.Text,
-                height: Int? = null
-            ) {
-                OutlinedTextField(
-                    value = value,
-                    onValueChange = onChange,
-                    label = { Text(label) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .let { if (height != null) it.height(height.dp) else it },
-                    keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-                    shape = RoundedCornerShape(14.dp),
-                    textStyle = LocalTextStyle.current.copy(
-                        color = Color.White,
-                        fontSize = 16.sp
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = if (book != null) "📘 Chỉnh sửa sách" else "📘 Thêm sách",
+                        color = Color.White
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
                 )
-            }
+            )
+        },
+        containerColor = Color.Transparent
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Brush.verticalGradient(colorLg_Rg))
+                .padding(paddingValues)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                val fieldModifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
 
-            item { inputCard("Tiêu đề", title, { title = it }) }
-            item { inputCard("Tác giả", author, { author = it }) }
-            item { inputCard("Thể loại", category, { category = it }) }
-            item { inputCard("Audio URL", audioUrl, { audioUrl = it }) }
-            item { inputCard("Mô tả", description, { description = it }, height = 120) }
-            item { inputCard("Thời lượng", duration, { duration = it }) }
-            item { inputCard("Ảnh bìa (URL)", imageUrl, { imageUrl = it }) }
-            item { inputCard("Ngôn ngữ", language, { language = it }) }
+                @Composable
+                fun label(text: String): @Composable () -> Unit = {
+                    Text(text, color = Color.White, fontSize = 14.sp)
+                }
 
-            item {
-                inputCard(
-                    label = "Lượt nghe",
+                // Áp dụng màu sắc cho các TextField
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = { title = it },
+                    label = label("Tiêu đề"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = author,
+                    onValueChange = { author = it },
+                    label = label("Tác giả"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = { category = it },
+                    label = label("Thể loại"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = audioUrl,
+                    onValueChange = { audioUrl = it },
+                    label = label("Audio URL"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = label("Mô tả"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = duration,
+                    onValueChange = { duration = it },
+                    label = label("Thời lượng"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = imageUrl,
+                    onValueChange = { imageUrl = it },
+                    label = label("Hình ảnh URL"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
+                    value = language,
+                    onValueChange = { language = it },
+                    label = label("Ngôn ngữ"),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
+                )
+                OutlinedTextField(
                     value = listenCount.toString(),
-                    onChange = { listenCount = it.toIntOrNull() ?: 0 },
-                    keyboardType = KeyboardType.Number
+                    onValueChange = { listenCount = it.toIntOrNull() ?: 0 },
+                    label = label("Lượt nghe"),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = fieldModifier,
+                    colors = textFieldColors
                 )
-            }
 
-            item {
-                inputCard(
-                    label = "Đánh giá",
-                    value = rating.toString(),
-                    onChange = { rating = it.toDoubleOrNull() ?: 0.0 },
-                    keyboardType = KeyboardType.Decimal
+                Text("Đánh giá: ${rating.toInt()}⭐", color = Color.White, fontSize = 14.sp)
+                Slider(
+                    value = rating,
+                    onValueChange = { rating = it },
+                    valueRange = 0f..5f,
+                    steps = 4,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
-            }
 
-            item {
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Button(
                     onClick = {
-                        if (title.isBlank() || author.isBlank() || category.isBlank() ||
-                            audioUrl.isBlank() || description.isBlank() || duration.isBlank() ||
-                            imageUrl.isBlank() || language.isBlank()
+                        if (title.isBlank() || author.isBlank() || category.isBlank() || audioUrl.isBlank()
+                            || description.isBlank() || duration.isBlank() || imageUrl.isBlank() || language.isBlank()
                         ) {
                             snackbarMessage = "⚠️ Vui lòng điền đầy đủ thông tin"
                             showSnackbar = true
                         } else {
                             val bookRequest = BookRequest(
-                                title,
-                                author,
-                                category,
-                                audioUrl,
-                                description,
-                                duration,
-                                imageUrl,
-                                language,
-                                listenCount,
-                                rating.toFloat(),
+                                title, author, category, audioUrl,
+                                description, duration, imageUrl, language,
+                                listenCount, rating
                             )
-
-
                             coroutineScope.launch {
-                                try {
-                                    val response = if (book != null) {
-                                        RetrofitService.adminManagerApi.updateBook(
-                                            id = book.id,
-                                            book = bookRequest
-                                        )
-                                    } else {
-                                        RetrofitService.adminManagerApi.addAudiobook(bookRequest)
-                                    }
-
-                                    if (response.isSuccessful) {
-                                        navController.previousBackStackEntry
-                                            ?.savedStateHandle
-                                            ?.set("bookAddResult", "success")
-
-                                        navController.popBackStack()
+                                if (book != null) {
+                                    viewModel.updateBook(book.id, bookRequest)
+                                    navController.previousBackStackEntry
+                                        ?.savedStateHandle?.set("bookAddResult", "updated")
+                                    navController.popBackStack()
                                 } else {
-                                        println("❌ Error Body: ${response.errorBody()?.string()}")
-                                        "❌ Lỗi khi thực hiện yêu cầu"
+                                    viewModel.addBook(bookRequest) { success, message ->
+                                        snackbarMessage = if (success) "✅ $message" else "❌ $message"
+                                        showSnackbar = true
+                                        if (success) {
+                                            navController.previousBackStackEntry
+                                                ?.savedStateHandle?.set("bookAddResult", "success")
+                                            navController.popBackStack()
+                                        }
                                     }
-                                } catch (e: Exception) {
-                                    snackbarMessage = "⚠️ Lỗi mạng: ${e.localizedMessage}"
                                 }
-                                showSnackbar = true
                             }
                         }
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF264B5D))
                 ) {
-                    Text(if (book != null) "💾 Cập nhật" else "➕ Thêm sách")
+                    Text(if (book != null) "💾 Cập nhật" else "➕ Thêm sách", color = Color.White)
                 }
-            }
-        }
 
-        if (showSnackbar) {
-            Snackbar(
-                modifier = Modifier.padding(16.dp),
-                action = {
-                    TextButton(onClick = { showSnackbar = false }) {
-                        Text("OK")
+                if (showSnackbar) {
+                    Snackbar(
+                        modifier = Modifier.padding(top = 8.dp),
+                        containerColor = Color.White
+                    ) {
+                        Text(snackbarMessage, color = Color.Black)
                     }
                 }
-            ) {
-                Text(snackbarMessage)
             }
         }
     }

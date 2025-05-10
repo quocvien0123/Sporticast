@@ -79,7 +79,7 @@ fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
                             fontSize = 14.sp
                         )
                         Text(
-                            text = "👑 " + if (user.isAdmin == true) "Admin" else "User",
+                            text = "👑 " + if (user.is_admin == true) "Admin" else "User",
                             color = Color(0xFFB3E5FC),
                             fontSize = 13.sp
                         )

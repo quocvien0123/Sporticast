@@ -105,15 +105,7 @@ fun AppNavigator() {
             )
         }
         composable("addOrEditBook") {
-            AddOrEditBookScreen(
-                navController = navController,
-                onSave = { bookRequest ->
-                // Sau khi thêm sách thành công
-                navController.previousBackStackEntry
-                    ?.savedStateHandle
-                    ?.set("bookAddResult", "success")
-                navController.popBackStack()
-            })
+            AddOrEditBookScreen(navController = navController)
         }
 
         composable(
@@ -124,22 +116,10 @@ fun AppNavigator() {
             val book = Json.decodeFromString<Book>(
                 URLDecoder.decode(bookJson, StandardCharsets.UTF_8.toString())
             )
-
-            AddOrEditBookScreen(
-                navController = navController,
-                book = book,
-                onSave = { bookRequest ->
-                    // TODO: Gọi ViewModel lưu sách tại đây
-
-                    // Gửi kết quả về màn trước
-                    navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.set("bookAddResult", "success")
-
-                    // Quay lại màn trước
-                    navController.popBackStack()
-        })
+            AddOrEditBookScreen(book = book, navController = navController)
         }
+
+
 
         composable(
             route = "audiobookDetail/{bookJson}",

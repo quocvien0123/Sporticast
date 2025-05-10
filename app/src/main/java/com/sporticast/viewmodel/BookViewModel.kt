@@ -1,8 +1,5 @@
 package com.sporticast.viewmodel
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sporticast.dto.request.BookRequest
@@ -13,9 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class   BookViewModel: ViewModel() {
+class BookViewModel : ViewModel() {
     private val _loadBook = MutableStateFlow<List<Book>>(emptyList())
     val loadBook: StateFlow<List<Book>> = _loadBook.asStateFlow()
+
+    private val _updateResult = MutableStateFlow<String?>(null)
+    val updateResult: StateFlow<String?> = _updateResult
+
+    private val bookApi = RetrofitService.bookApi
 
     fun loadBook() {
         viewModelScope.launch {
@@ -41,17 +43,55 @@ class   BookViewModel: ViewModel() {
             }
         }
     }
-  
-    fun deleteBook(bookId: Int) {
+
+    fun addBook(dto: BookRequest, onResult: (Boolean, String) -> Unit) {
         viewModelScope.launch {
             try {
-               // RetrofitService.adminManagerApi.deleteBook(bookId)// chưa viet api
-                _loadBook.value = _loadBook.value.filterNot { it.id == bookId }
+                val response = RetrofitService.adminManagerApi.addAudiobook(dto)
+                if (response.isSuccessful) {
+                    onResult(true, "Thêm sách thành công")
+                    loadBook()
+                } else {
+                    onResult(false, "Lỗi: ${response.errorBody()?.string()}")
+                }
             } catch (e: Exception) {
-                e.printStackTrace()
+                onResult(false, "Lỗi mạng: ${e.localizedMessage}")
             }
         }
     }
+
+    fun updateBook(id: Long, dto: BookRequest) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitService.adminManagerApi.updateBook(id, dto)
+                if (response.isSuccessful) {
+                    val book = response.body()
+                    _updateResult.value = "Cập nhật thành công: ${book?.title}"
+                    loadBook()
+                } else {
+                    _updateResult.value = "Thất bại: ${response.errorBody()?.string()}"
+                }
+            } catch (e: Exception) {
+                _updateResult.value = "Lỗi: ${e.localizedMessage}"
+            }
+        }
+    }
+
+    fun deleteBook(id: Long, onResult: () -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = bookApi.deleteBook(id)
+                if (response.isSuccessful) {
+                    onResult()
+                } else {
+                    // xử lý lỗi nếu cần
+                }
+            } catch (e: Exception) {
+                // xử lý lỗi nếu cần
+            }
+        }
+    }
+
 
 
     init {
