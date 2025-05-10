@@ -50,18 +50,18 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    private fun getIconForCategory(name: String): String {
-        return when (name) {
-            "Novel" -> "📖"
-            "Business" -> "🏢"
-            "Psychology" -> "🧬"
-            "Science" -> "⚛️"
-            "History" -> "🏺"
-            "Growth" -> "📈"
-            "Literature" -> "🖋️"
-            "Children" -> "🧒"
-            else -> "📘"
-        }
+   private fun getIconForCategory(name: String): String {
+        val categoryIcons = mapOf(
+            "Novel" to "📖",
+            "Business" to "🏢",
+            "Psychology" to "🧬",
+            "Science" to "⚛️",
+            "History" to "🏺",
+            "Growth" to "📈",
+            "Literature" to "🖋️",
+            "Children" to "🧒"
+        )
+        return categoryIcons[name] ?: "📘"
     }
 
     fun onCategorySelected(category: Category) {

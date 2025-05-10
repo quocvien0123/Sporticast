@@ -10,6 +10,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
@@ -25,6 +26,7 @@ import androidx.navigation.NavController
 import com.sporticast.model.Book
 import com.sporticast.ui.theme.colorLg_Rg
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.AsyncImage
 import java.net.URLEncoder
 
@@ -67,7 +69,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(1.dp))
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,36 +79,61 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     model = book.imageUrl,
                     contentDescription = "Ảnh bìa sách",
                     modifier = Modifier
-                        .size(120.dp)
+                        .size(100.dp)
                         .clip(RoundedCornerShape(12.dp))
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                Column(modifier = Modifier.weight(1f)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
                     Text(
                         text = decodeText(book.title),
-                        fontSize = 22.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.White
+                        fontFamily = FontFamily.SansSerif,
+                        color = Color.White,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = decodeText(book.author),
+                        fontSize = 14.sp,
+                        color = Color.Gray,
+                        fontFamily = FontFamily.SansSerif
+                    )
+
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Tác giả ${decodeText(book.author)}", color = Color.LightGray, fontSize = 16.sp)
-                    Text(
-                        text = "Thể loại: ${book.category}",
-                        color = Color.LightGray,
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Thời lượng: ${book.duration}",
-                        color = Color.LightGray,
-                        fontSize = 16.sp
-                    )
-                    Text(
-                        text = "Đánh giá: ⭐ ${book.rating}",
-                        color = Color.LightGray,
-                        fontSize = 16.sp
-                    )
+
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = null,
+                            tint = Color(0xFFFFC107),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Text(
+                            text = "${book.rating}",
+                            fontSize = 14.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(start = 4.dp)
+                        )
+                    }
+                }
+
+                // Nút "Đánh dấu" (giống như ảnh)
+                Button(
+                    onClick = { /* TODO */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4B4B4B)),
+                    shape = RoundedCornerShape(20.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
+                ) {
+                    Text(text = "+ Đánh dấu", fontSize = 12.sp, color = Color.White)
                 }
             }
 
@@ -133,7 +159,11 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 shape = RoundedCornerShape(28.dp),
                 color = Color.Transparent,
                 shadowElevation = 8.dp
-            ) {
+
+
+            )
+
+            {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -198,17 +228,48 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 
 @Composable
 fun TabIntroContent(book: Book) {
-    Text(
-        text = "Giới thiệu sách: ${
-            decodeText(book.description ?: "Mô tả không có sẵn")
-        } của tác giả ${
-            decodeText(book.author ?: "Tác giả không rõ")
-        }",
-        color = Color.White,
-        fontSize = 15.sp,
-        modifier = Modifier.padding(16.dp)
-    )
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = decodeText(book.description ?: "Mô tả không có sẵn"),
+            color = Color.White,
+            fontSize = 15.sp,
+            fontFamily = FontFamily.SansSerif,
+            maxLines = 4,
+            overflow = TextOverflow.Ellipsis
+        )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        InfoRow(label = "Tác giả", value = decodeText(book.author ?: "Tác giả không rõ"))
+        InfoRow(label = "Thời lượng", value = book.duration)
+        InfoRow(label = "Đánh giá", value = "⭐ ${book.rating}")
+        InfoRow(label = "Nghe", value = "${book.listenCount} lần")
+        InfoRow(label = "Ngôn ngữ", value = book.language)
+    }
+}
+
+@Composable
+fun InfoRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            color = Color.Gray,
+            fontSize = 15.sp,
+            fontFamily = FontFamily.SansSerif
+        )
+        Text(
+            text = value,
+            color = Color.White,
+            fontSize = 15.sp,
+            fontFamily = FontFamily.SansSerif,
+            modifier = Modifier.padding(start = 8.dp)
+        )
+    }
 }
 
 @Composable

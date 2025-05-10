@@ -87,7 +87,7 @@ fun FeaturedContentItem(
                     fontWeight = FontWeight.Bold,
                     maxLines = 5,
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = book.author,
                     color = Color.Gray,
@@ -100,12 +100,12 @@ fun FeaturedContentItem(
                     fontSize = 16.sp,
                     maxLines = 1
                 )
-                Text(
-                    text = book.language,
-                    color = Color.Gray,
-                    fontSize = 16.sp,
-                    maxLines = 1
-                )
+//                Text(
+//                    text = book.language,
+//                    color = Color.Gray,
+//                    fontSize = 16.sp,
+//                    maxLines = 1
+//                )
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
