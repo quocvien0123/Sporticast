@@ -39,33 +39,4 @@ class UsersViewModel : ViewModel() {
         loadUser()
     }
 
-//    private val _users = MutableStateFlow(
-//        listOf(
-//            Users(
-//                id = 1,
-//                name = "Alice",
-//                email = "alice@example.com",
-//                avatar = "https://i.pravatar.cc/150?img=1",
-//                role = "admin",
-//                createdAt = "2024-01-01"
-//            ),
-//            Users(
-//                id = 2,
-//                name = "Bob",
-//                email = "bob@example.com",
-//                avatar = "https://i.pravatar.cc/150?img=2",
-//                role = "user",
-//                createdAt = "2024-01-05"
-//            ),
-//            Users(
-//                id = 3,
-//                name = "Charlie",
-//                email = "charlie@example.com",
-//                avatar = "https://i.pravatar.cc/150?img=3",
-//                role = "user",
-//                createdAt = "2024-02-10"
-//            )
-//        )
-//    )
-//    val users: StateFlow<List<Users>> = _users
 }

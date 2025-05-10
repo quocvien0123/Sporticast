@@ -39,12 +39,16 @@ fun AdminDrawerScreen(
 
     val resultValue by resultFlow?.collectAsState() ?: remember { mutableStateOf("") }
 
-    if (resultValue == "success") {
-        LaunchedEffect(resultValue) {
-            snackbarHostState.showSnackbar("📘 Thêm sách thành công!")
+    LaunchedEffect(resultValue) {
+        when (resultValue) {
+            "success" -> snackbarHostState.showSnackbar("📘 Thêm sách thành công!")
+            "updated" -> snackbarHostState.showSnackbar("💾 Cập nhật sách thành công!")
+        }
+        if (resultValue.isNotBlank()) {
             navController.currentBackStackEntry?.savedStateHandle?.set("bookAddResult", "")
         }
     }
+
 
     val menuItems = listOf(
         MenuItemData("Người dùng", Icons.Default.Person),

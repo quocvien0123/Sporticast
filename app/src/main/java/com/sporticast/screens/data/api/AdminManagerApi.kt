@@ -20,10 +20,10 @@ interface AdminManagerApi {
     @POST("/admin/add_audiobook")
     suspend fun addAudiobook(@Body bookRequest: BookRequest): Response<Unit>
 
-    @PUT("admin/audiobooks/{id}")
+    @PUT("admin/edit_audiobook/{id}")
     suspend fun updateBook(
-        @Path("id") id: Int,
-        @Body book: BookRequest
+        @Path("id") id: Long,
+        @Body dto: BookRequest
     ): Response<Book>
 
 
