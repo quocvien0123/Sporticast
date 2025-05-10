@@ -18,9 +18,15 @@ class AuthViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
 
-    // Lấy sharedPreferences từ context của ứng dụng
-    private val sharedPreferences = App.instance.getContext()
-        .getSharedPreferences("auth", Context.MODE_PRIVATE)
+    // Lấy SharedPreferences một lần
+    private val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
+
+    private fun saveAuthData(token: String, isAdmin: Boolean) {
+        prefs.edit()
+            .putString("jwt_token", token)
+            .putBoolean("is_admin", isAdmin)
+            .apply()
+    }
 
     fun login(
         onAdminSuccess: () -> Unit,
@@ -35,9 +41,8 @@ class AuthViewModel : ViewModel() {
                 val body = response.body()
 
                 if (response.isSuccessful && body?.message == "Login Success") {
-                    // ✅ Lưu token vào SharedPreferences
-                    val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
-                    prefs.edit().putString("jwt_token", body.token).apply()
+                    // ✅ Lưu token và quyền admin
+                    saveAuthData(body.token, body.is_admin)
 
                     if (body.is_admin) {
                         onAdminSuccess()
@@ -55,27 +60,23 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-
     fun getToken(): String? {
-        val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
         return prefs.getString("jwt_token", null)
     }
-
-
 
     fun isLoggedIn(): Boolean {
         return getToken() != null
     }
 
-    fun logout(onComplete: () -> Unit) {
-        val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
-        prefs.edit().remove("jwt_token").apply()
-        onComplete()
-    }
-
     fun isAdmin(): Boolean {
-        val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
         return prefs.getBoolean("is_admin", false)
     }
 
+    fun logout(onComplete: () -> Unit) {
+        prefs.edit()
+            .remove("jwt_token")
+            .remove("is_admin")
+            .apply()
+        onComplete()
+    }
 }
