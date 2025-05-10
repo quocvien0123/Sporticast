@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -77,19 +79,38 @@ fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
                             fontSize = 14.sp
                         )
                         Text(
-                            text = "👑 " + if (user.is_admin == true) "Admin" else "User",
+                            text = "👑 " + if (user.isAdmin == true) "Admin" else "User",
                             color = Color(0xFFB3E5FC),
                             fontSize = 13.sp
                         )
                     }
 
-                    Text(
-                        text = user.createdAt ?: "",
-                        color = Color(0xFFCCCCCC),
-                        fontSize = 12.sp
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = user.createdAt ?: "",
+                            color = Color(0xFFCCCCCC),
+                            fontSize = 12.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        IconButton(
+                            onClick = {
+                                //  viewModel.deleteUser(user.id)
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Xóa người dùng",
+                                tint = Color.Red
+                            )
+                        }
+                    }
                 }
             }
         }
+
     }
 }
