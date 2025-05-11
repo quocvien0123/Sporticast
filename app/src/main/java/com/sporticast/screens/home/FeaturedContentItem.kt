@@ -1,6 +1,5 @@
 package com.sporticast.screens.home
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -16,8 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Headphones
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
@@ -34,12 +34,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sporticast.model.Book
+import com.sporticast.viewmodel.BookViewModel
 
 
 @Composable
 fun FeaturedContentItem(
     book: Book,
-    onClick: () -> Unit
+    userId: Long?, // Thêm userId để gửi lên backend
+    onClick: () -> Unit,
+    onFavouriteClick: (Long, Long) -> Unit, // <-- Bạn đã thêm dòng này
+    isFavourite: Boolean,
+    bookViewModel: BookViewModel
 ) {
     Card(
         modifier = Modifier
@@ -100,12 +105,7 @@ fun FeaturedContentItem(
                     fontSize = 16.sp,
                     maxLines = 1
                 )
-//                Text(
-//                    text = book.language,
-//                    color = Color.Gray,
-//                    fontSize = 16.sp,
-//                    maxLines = 1
-//                )
+
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Row(
@@ -153,15 +153,20 @@ fun FeaturedContentItem(
             }
 
             Spacer(modifier = Modifier.width(16.dp))
+
+            // Trái tim cho yêu thích
             Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = "Play",
-                tint = Color.Gray,
+                imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
+                contentDescription = "Favorite",
+                tint = if (isFavourite) Color.Red else Color.Gray,
                 modifier = Modifier
                     .size(40.dp)
                     .background(Color(0xFF1E1E2F), shape = RoundedCornerShape(8.dp))
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)
+                    .clickable {
+                        onFavouriteClick(userId!!, book.id)
+                    }
             )
         }
     }

@@ -1,6 +1,5 @@
 package com.sporticast.screens.admin
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -11,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -21,12 +21,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
-import com.sporticast.screens.data.api.RetrofitService
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.BookViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,11 +43,10 @@ fun AddOrEditBookScreen(
     var language by remember { mutableStateOf(book?.language ?: "") }
     var listenCount by remember { mutableStateOf(book?.listenCount ?: 0) }
     var rating by remember { mutableFloatStateOf(book?.rating ?: 0f) }
-    var showSnackbar by remember { mutableStateOf(false) }
+
+    val snackbarHostState = remember { SnackbarHostState() }
     var snackbarMessage by remember { mutableStateOf("") }
 
-
-    // Màu sắc cho TextField (Material 3)
     val textFieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = Color.White,
         unfocusedTextColor = Color.White,
@@ -75,9 +71,7 @@ fun AddOrEditBookScreen(
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
         containerColor = Color.Transparent
@@ -103,63 +97,14 @@ fun AddOrEditBookScreen(
                     Text(text, color = Color.White, fontSize = 14.sp)
                 }
 
-                // Áp dụng màu sắc cho các TextField
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = label("Tiêu đề"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = author,
-                    onValueChange = { author = it },
-                    label = label("Tác giả"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = category,
-                    onValueChange = { category = it },
-                    label = label("Thể loại"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = audioUrl,
-                    onValueChange = { audioUrl = it },
-                    label = label("Audio URL"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = label("Mô tả"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = duration,
-                    onValueChange = { duration = it },
-                    label = label("Thời lượng"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = imageUrl,
-                    onValueChange = { imageUrl = it },
-                    label = label("Hình ảnh URL"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
-                OutlinedTextField(
-                    value = language,
-                    onValueChange = { language = it },
-                    label = label("Ngôn ngữ"),
-                    modifier = fieldModifier,
-                    colors = textFieldColors
-                )
+                OutlinedTextField(value = title, onValueChange = { title = it }, label = label("Tiêu đề"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = author, onValueChange = { author = it }, label = label("Tác giả"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = category, onValueChange = { category = it }, label = label("Thể loại"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = audioUrl, onValueChange = { audioUrl = it }, label = label("Audio URL"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = description, onValueChange = { description = it }, label = label("Mô tả"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = duration, onValueChange = { duration = it }, label = label("Thời lượng"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = imageUrl, onValueChange = { imageUrl = it }, label = label("Hình ảnh URL"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = language, onValueChange = { language = it }, label = label("Ngôn ngữ"), modifier = fieldModifier, colors = textFieldColors)
                 OutlinedTextField(
                     value = listenCount.toString(),
                     onValueChange = { listenCount = it.toIntOrNull() ?: 0 },
@@ -186,7 +131,9 @@ fun AddOrEditBookScreen(
                             || description.isBlank() || duration.isBlank() || imageUrl.isBlank() || language.isBlank()
                         ) {
                             snackbarMessage = "⚠️ Vui lòng điền đầy đủ thông tin"
-                            showSnackbar = true
+                            coroutineScope.launch {
+                                snackbarHostState.showSnackbar(snackbarMessage)
+                            }
                         } else {
                             val bookRequest = BookRequest(
                                 title, author, category, audioUrl,
@@ -202,7 +149,9 @@ fun AddOrEditBookScreen(
                                 } else {
                                     viewModel.addBook(bookRequest) { success, message ->
                                         snackbarMessage = if (success) "✅ $message" else "❌ $message"
-                                        showSnackbar = true
+                                        coroutineScope.launch {
+                                            snackbarHostState.showSnackbar(snackbarMessage)
+                                        }
                                         if (success) {
                                             navController.previousBackStackEntry
                                                 ?.savedStateHandle?.set("bookAddResult", "success")
@@ -221,16 +170,14 @@ fun AddOrEditBookScreen(
                 ) {
                     Text(if (book != null) "💾 Cập nhật" else "➕ Thêm sách", color = Color.White)
                 }
-
-                if (showSnackbar) {
-                    Snackbar(
-                        modifier = Modifier.padding(top = 8.dp),
-                        containerColor = Color.White
-                    ) {
-                        Text(snackbarMessage, color = Color.Black)
-                    }
-                }
             }
+
+            // ✅ Đặt SnackbarHost trong BoxScope
+            SnackbarHost(
+                hostState = snackbarHostState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+            )
         }
     }
 }

@@ -1,5 +1,9 @@
 package com.sporticast.viewmodel
 
+import android.util.Log
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sporticast.dto.request.BookRequest
@@ -18,6 +22,32 @@ class BookViewModel : ViewModel() {
     val updateResult: StateFlow<String?> = _updateResult
 
     private val bookApi = RetrofitService.bookApi
+    private val _favoriteStates = mutableStateMapOf<Long, Boolean>() // bookId -> true/false
+    val favoriteStates: Map<Long, Boolean> = _favoriteStates
+
+
+    private val _favoriteBooks = mutableStateOf<List<Book>>(emptyList())
+    val favoriteBooks: State<List<Book>> = _favoriteBooks
+
+    fun toggleFavourite(userId: Long, bookId: Long) {
+
+    }
+
+    fun loadFavorites(userId: Long) {
+        viewModelScope.launch {
+            try {
+                val response = bookApi.getFavorites(userId)
+                if (response.isSuccessful) {
+                    _favoriteBooks.value = response.body() ?: emptyList()
+                }
+            } catch (e: Exception) {
+                // handle error
+            }
+        }
+    }
+
+
+    fun isFavorite(bookId: Long): Boolean = _favoriteStates[bookId] == true
 
     fun loadBook() {
         viewModelScope.launch {
@@ -92,7 +122,24 @@ class BookViewModel : ViewModel() {
         }
     }
 
+    fun addToFavorites(userId: Long?, bookId: Long, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = bookApi.addToFavorites(userId, bookId)
+                val responseBody = response.body()?.string() // Hoặc bất kỳ cách nào để lấy body từ response
+                Log.d("API_Response", responseBody.toString()) // Xem chi tiết dữ liệu trả về
 
+                if (response.isSuccessful) {
+                    _favoriteStates[bookId] = true
+                    onResult(true)
+                } else {
+                    onResult(false)
+                }
+            } catch (e: Exception) {
+                onResult(false)
+            }
+        }
+    }
 
     init {
         loadBook()

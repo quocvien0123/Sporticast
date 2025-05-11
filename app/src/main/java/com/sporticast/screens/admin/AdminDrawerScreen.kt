@@ -6,6 +6,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -28,10 +29,9 @@ fun AdminDrawerScreen(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     var selectedItem by remember { mutableStateOf("Người dùng") }
-
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Lắng nghe StateFlow từ SavedStateHandle
+    // Lắng nghe kết quả trả về từ BooksScreen
     val resultFlow = navController
         .currentBackStackEntry
         ?.savedStateHandle
@@ -48,7 +48,6 @@ fun AdminDrawerScreen(
             navController.currentBackStackEntry?.savedStateHandle?.set("bookAddResult", "")
         }
     }
-
 
     val menuItems = listOf(
         MenuItemData("Người dùng", Icons.Default.Person),
@@ -114,7 +113,6 @@ fun AdminDrawerScreen(
         }
     ) {
         Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
@@ -137,6 +135,10 @@ fun AdminDrawerScreen(
                     .background(Brush.verticalGradient(colorLg_Rg))
                     .padding(16.dp)
             ) {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier.align(Alignment.TopCenter)
+                )
                 when (selectedItem) {
                     "Người dùng" -> UsersScreen()
                     "Sách nói điện tử" -> BooksScreen(navController = navController)

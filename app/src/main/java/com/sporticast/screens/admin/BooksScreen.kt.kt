@@ -8,10 +8,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Headphones
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -30,8 +30,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun BooksScreen(viewModel: BookViewModel = viewModel(), navController: NavController) {
-    val snackbarHostState = remember { SnackbarHostState() }  // Tạo SnackbarHostState
-    val scope = rememberCoroutineScope()  // Tạo scope cho coroutine
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
     LaunchedEffect(Unit) {
         viewModel.loadBook()
     }
@@ -50,90 +51,90 @@ fun BooksScreen(viewModel: BookViewModel = viewModel(), navController: NavContro
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .clickable {
+                            val bookJson = Uri.encode(Json.encodeToString(Book.serializer(), book))
+                            navController.navigate("addOrEditBook/$bookJson")
+                        },
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(8.dp),
                     colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E2F))
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        Box(
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        IconButton(
+                            onClick = {
+                                viewModel.deleteBook(book.id) {
+                                    viewModel.loadBook()
+                                    scope.launch {
+                                        snackbarHostState.showSnackbar("✅ Sách đã được xóa thành công")
+                                    }
+                                }
+                            },
                             modifier = Modifier
-                                .size(90.dp)
-                                .clip(RoundedCornerShape(8.dp))
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp)
+                                .size(32.dp)
                         ) {
-                            AsyncImage(
-                                model = book.imageUrl,
-                                contentDescription = "Ảnh bìa sách",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(RoundedCornerShape(12.dp))
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Xóa sách",
+                                tint = Color(0xFFEF5350),
+                                modifier = Modifier.size(20.dp)
                             )
                         }
 
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(text = book.title, color = Color.White, fontSize = 18.sp)
-                            Text(text = book.author, color = Color.Gray, fontSize = 14.sp)
-                            Text(text = book.category, color = Color.Gray, fontSize = 14.sp)
-                            Text(text = book.language, color = Color.Gray, fontSize = 14.sp)
-
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(Icons.Default.Timer, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = book.duration, color = Color.Gray, fontSize = 12.sp)
-
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(Icons.Default.Star, contentDescription = null, tint = Color.Yellow, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = book.rating.toString(), color = Color.Gray, fontSize = 12.sp)
-
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(Icons.Default.Headphones, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(text = book.listenCount.toString(), color = Color.Gray, fontSize = 12.sp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(90.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                            ) {
+                                AsyncImage(
+                                    model = book.imageUrl,
+                                    contentDescription = "Ảnh bìa sách",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(12.dp))
+                                )
                             }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                            Text(text = "Audio: ${book.audioUrl}", color = Color.LightGray, fontSize = 12.sp, maxLines = 2)
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(text = book.title, color = Color.White, fontSize = 18.sp)
+                                Text(text = book.author, color = Color.Gray, fontSize = 14.sp)
+                                Text(text = book.category, color = Color.Gray, fontSize = 14.sp)
+                                Text(text = book.language, color = Color.Gray, fontSize = 14.sp)
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
 
-                            Row(
-                                horizontalArrangement = Arrangement.End,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.Timer, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(text = book.duration, color = Color.Gray, fontSize = 12.sp)
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Icon(Icons.Default.Star, contentDescription = null, tint = Color.Yellow, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(text = book.rating.toString(), color = Color.Gray, fontSize = 12.sp)
+
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Icon(Icons.Default.Headphones, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(text = book.listenCount.toString(), color = Color.Gray, fontSize = 12.sp)
+                                }
+
+                                Spacer(modifier = Modifier.height(8.dp))
+
                                 Text(
-                                    text = "Sửa",
-                                    color = Color(0xFF64B5F6),
-                                    modifier = Modifier
-                                        .clickable {
-                                            val bookJson = Uri.encode(Json.encodeToString(Book.serializer(), book))
-                                            navController.navigate("addOrEditBook/$bookJson")
-                                        }
-                                        .padding(horizontal = 8.dp)
-                                )
-                                Text(
-                                    text = "Xóa",
-                                    color = Color(0xFFEF5350),
-                                    modifier = Modifier
-                                        .clickable {
-                                            viewModel.deleteBook(book.id) {
-                                                viewModel.loadBook()  // Tải lại sách
-                                                scope.launch {
-                                                    // Hiển thị snackbar sau khi xóa
-                                                    snackbarHostState.showSnackbar("✅ Sách đã được xóa thành công")
-                                                }
-                                            }
-                                        }
-                                        .padding(horizontal = 8.dp)
+                                    text = "Audio: ${book.audioUrl}",
+                                    color = Color.LightGray,
+                                    fontSize = 12.sp,
+                                    maxLines = 2
                                 )
                             }
                         }
@@ -142,10 +143,9 @@ fun BooksScreen(viewModel: BookViewModel = viewModel(), navController: NavContro
             }
         }
 
-        // SnackbarHost để hiển thị snackbar
         SnackbarHost(
-            hostState = snackbarHostState,  // Truyền snackbarHostState vào
-            modifier = Modifier.align(Alignment.BottomCenter)
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.TopCenter)
         )
 
         FloatingActionButton(

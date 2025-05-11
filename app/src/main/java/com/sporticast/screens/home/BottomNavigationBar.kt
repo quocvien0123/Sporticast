@@ -15,42 +15,51 @@ package com.sporticast.screens.home
 
     data class BottomNavItem(val title: String, val icon: ImageVector, val route: String)
 
-    @Composable
-    fun BottomNavigationBar(navController: NavController) {
-        val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
-        NavigationBar(
-                containerColor = Color.DarkGray,
-            modifier = Modifier.background(
-                Brush.verticalGradient(colors = colorLg_Rg)
-            )
-        ) {
-            val items = listOf(
-                BottomNavItem("Home", Icons.Default.Home, "homeScreen"),
-                BottomNavItem("Favorites", Icons.Default.Favorite, "favorites"),
-                BottomNavItem("PlayList", Icons.Default.PlaylistAdd, "playlist"),
-                BottomNavItem("Profile", Icons.Default.Person, "profile")
-            )
+    NavigationBar(
+        containerColor = Color.DarkGray,
+        modifier = Modifier.background(
+            Brush.verticalGradient(colors = colorLg_Rg)
+        )
+    ) {
+        val items = listOf(
+            BottomNavItem("Home", Icons.Default.Home, "homeScreen"),
+            BottomNavItem("Favorites", Icons.Default.Favorite, "favorites"),
+            BottomNavItem("PlayList", Icons.Default.PlaylistAdd, "playlist"),
+            BottomNavItem("Profile", Icons.Default.Person, "profile")
+        )
 
-            items.forEach { item ->
-                NavigationBarItem(
-                    icon = { Icon(item.icon, contentDescription = item.title) },
-                    label = { Text(item.title) },
-                    selected = currentDestination == item.route,
-                    onClick = {
-                        navController.navigate(item.route) {
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color.Gray,
-                        selectedTextColor = Color.White,
-                        unselectedIconColor = Color.Gray,
-                        unselectedTextColor = Color.Gray,
-                        indicatorColor = if (currentDestination == item.route) Color.White else Color.Transparent
+        items.forEach { item ->
+            val selected = currentDestination == item.route
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = item.title,
+                        tint = if (selected) Color.White else Color.Gray
                     )
+                },
+                label = {
+                    Text(
+                        text = item.title,
+                        color = if (selected) Color.White else Color.Gray
+                    )
+                },
+                selected = selected,
+                onClick = {
+                    navController.navigate(item.route) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                alwaysShowLabel = true,
+                colors = NavigationBarItemDefaults.colors(
+                    indicatorColor = Color.Transparent // Không có nền làm nổi
                 )
-            }
+            )
         }
     }
+}

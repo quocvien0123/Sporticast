@@ -21,12 +21,14 @@ class AuthViewModel : ViewModel() {
     // Lấy SharedPreferences một lần
     private val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
-    private fun saveAuthData(token: String, isAdmin: Boolean) {
+    private fun saveAuthData(token: String, isAdmin: Boolean, userId: Long) {
         prefs.edit()
             .putString("jwt_token", token)
             .putBoolean("is_admin", isAdmin)
+            .putLong("user_id", userId)
             .apply()
     }
+
 
     fun login(
         onAdminSuccess: () -> Unit,
@@ -42,7 +44,7 @@ class AuthViewModel : ViewModel() {
 
                 if (response.isSuccessful && body?.message == "Login Success") {
                     // ✅ Lưu token và quyền admin
-                    saveAuthData(body.token, body.is_admin)
+                    saveAuthData(body.token, body.is_admin, body.user_id)
 
                     if (body.is_admin) {
                         onAdminSuccess()
@@ -79,4 +81,9 @@ class AuthViewModel : ViewModel() {
             .apply()
         onComplete()
     }
+    fun getUserId(): Long? {
+        val id = prefs.getLong("user_id", -1)
+        return if (id != -1L) id else null
+    }
+
 }

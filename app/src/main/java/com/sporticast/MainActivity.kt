@@ -66,8 +66,15 @@ fun AppNavigator() {
         }
 
         composable("favorites") {
-            FavoritesScreen(navController)
+            val authViewModel: AuthViewModel = viewModel()
+            val userId = authViewModel.getUserId();
+            if (userId != null) {
+                FavoritesScreen(navController = navController, userId = userId)
+            } else {
+                // Bạn có thể xử lý lỗi ở đây (ví dụ hiển thị thông báo hoặc điều hướng về login)
+            }
         }
+
         composable("playlist") {
             PlayListScreen(navController)
         }
