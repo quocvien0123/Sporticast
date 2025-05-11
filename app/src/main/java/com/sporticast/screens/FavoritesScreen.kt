@@ -8,12 +8,14 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 import androidx.navigation.NavController
 import com.sporticast.screens.home.BottomNavigationBar
@@ -48,6 +50,14 @@ fun FavoritesScreen(navController: NavController) {
                         tint = Color.White
                     )
                 }
+
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Yêu thích",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    modifier = Modifier.weight(1f)
+                )
 
                 Spacer(modifier = Modifier.weight(1f))
 

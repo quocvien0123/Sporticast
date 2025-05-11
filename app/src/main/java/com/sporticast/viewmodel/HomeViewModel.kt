@@ -23,7 +23,7 @@ class HomeViewModel : ViewModel() {
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
-
+    val runbook = MutableStateFlow<List<Book>>(emptyList())
     private val _selectedCategory = MutableStateFlow<Category?>(null)
     val selectedCategory: StateFlow<Category?> = _selectedCategory.asStateFlow()
 
@@ -49,6 +49,12 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+//    fun addBookToPlaylist(bookId: Int, playlistId: Int) {
+//        viewModelScope.launch {
+//            // Gọi repository hoặc Room DB để lưu quan hệ
+//            repository.addBookToPlaylist(bookId, playlistId)
+//        }
+//    }
 
    private fun getIconForCategory(name: String): String {
         val categoryIcons = mapOf(

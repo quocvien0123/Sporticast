@@ -89,14 +89,12 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     modifier = Modifier
                         .weight(1f)
                 ) {
-                    Text(
+                   Text(
                         text = decodeText(book.title),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color.White,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        color = Color.White
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -133,7 +131,7 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     shape = RoundedCornerShape(20.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp)
                 ) {
-                    Text(text = "+ Đánh dấu", fontSize = 12.sp, color = Color.White)
+                    Text(text = "+ Thêm vào PlayList", fontSize = 12.sp, color = Color.White)
                 }
             }
 
@@ -164,6 +162,8 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
             )
 
             {
+
+
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -183,7 +183,9 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
+
                 }
+
             }
             Spacer(modifier = Modifier.height(40.dp))
 

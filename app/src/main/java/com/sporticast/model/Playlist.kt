@@ -1,8 +1,8 @@
 package com.sporticast.model
 
 data class Playlist(
-    var id: Int? = null,
+    var id: String,
     var userId: Int? = null,
-    var name: String? = null,
-    var createdAt: String? = null
+    var name: String,
+    var createdAt: String
 )

@@ -5,6 +5,7 @@ import com.sporticast.dto.request.User
 import com.sporticast.model.Book
 import retrofit2.Response // Correct import
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -25,6 +26,9 @@ interface AdminManagerApi {
         @Path("id") id: Long,
         @Body dto: BookRequest
     ): Response<Book>
+    @DELETE("admin/delete_user/{id}")
+    suspend fun deleteUser(@Path("id") id: Int): Response<Void>
+
 
 
 

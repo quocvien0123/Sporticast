@@ -1,6 +1,7 @@
 package com.sporticast.screens.admin
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,21 +13,27 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.sporticast.viewmodel.UsersViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
     val users = viewModel.loadUser.collectAsState().value
     val cardColor = Color(0xFF2A3B4C).copy(alpha = 0.95f)
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.loadUser()
@@ -96,17 +103,27 @@ fun UsersScreen(viewModel: UsersViewModel = viewModel()) {
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        IconButton(
-                            onClick = {
-                                //  viewModel.deleteUser(user.id)
-                            }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Xóa người dùng",
-                                tint = Color.Red
-                            )
-                        }
+
+                        Text(
+                            text = "Xóa",
+                            color = Color(0xFFEF5350),
+                            modifier = Modifier
+                                .clickable {
+                                    viewModel.deletedUser(user.id) { success, message ->
+                                        if (success) {
+                                            viewModel.loadUser() // Reload users
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar("✅ Người dùng đã được xóa thành công")
+                                            }
+                                        } else {
+                                            scope.launch {
+                                                snackbarHostState.showSnackbar("❌ Lỗi: $message")
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding(horizontal = 8.dp)
+                        )
                     }
                 }
             }

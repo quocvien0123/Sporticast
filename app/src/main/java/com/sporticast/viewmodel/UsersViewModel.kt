@@ -35,6 +35,21 @@ class UsersViewModel : ViewModel() {
             }
         }
     }
+    fun deletedUser(id: Int, onResult: (Boolean, String) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitService.adminManagerApi.deleteUser(id)
+                if (response.isSuccessful) {
+                    onResult(true, "Xóa người dùng thành công")
+                    loadUser()
+                } else {
+                    onResult(false, "Lỗi: ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                onResult(false, "Lỗi mạng: ${e.localizedMessage}")
+            }
+        }
+    }
     init {
         loadUser()
     }

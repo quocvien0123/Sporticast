@@ -7,12 +7,12 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.sporticast.dto.request.BookRequest
 import com.sporticast.model.Book
 import com.sporticast.screens.FavoritesScreen
 import com.sporticast.screens.home.HomeScreen
@@ -23,6 +23,7 @@ import com.sporticast.screens.WelcomeScreen
 import com.sporticast.screens.admin.AddOrEditBookScreen
 import com.sporticast.screens.admin.AdminDrawerScreen
 import com.sporticast.screens.home.AudiobookDetailScreen
+import com.sporticast.screens.home.PlayListScreen
 import com.sporticast.screens.home.PlayerScreen
 import com.sporticast.viewmodel.AuthViewModel
 
@@ -67,6 +68,10 @@ fun AppNavigator() {
         composable("favorites") {
             FavoritesScreen(navController)
         }
+        composable("playlist") {
+            PlayListScreen(navController)
+        }
+
 
         composable("loginScreen") {
             LoginScreen(navController)
@@ -139,5 +144,7 @@ fun AppNavigator() {
 
     }
 }
+
+
 
 
