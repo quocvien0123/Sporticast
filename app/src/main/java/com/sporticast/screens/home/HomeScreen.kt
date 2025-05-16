@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -18,6 +19,7 @@ import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.AuthViewModel
 import com.sporticast.viewmodel.BookViewModel
 import com.sporticast.viewmodel.HomeViewModel
+import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.net.URLEncoder
@@ -27,7 +29,8 @@ import java.nio.charset.StandardCharsets
 @Composable
 fun HomeScreen(
     navController: NavController,
-    authViewModel:  AuthViewModel = viewModel()
+    authViewModel:  AuthViewModel = viewModel(),
+    bookViewModel: BookViewModel = viewModel(),
 ) {
     val imageUrls = listOf(
         // Atomic Habits - James Clear
@@ -49,6 +52,11 @@ fun HomeScreen(
     )
 
     val userId = authViewModel.getUserId()
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            bookViewModel.loadFavorites(userId)
+        }
+    }
     val bookViewModel: BookViewModel = viewModel()
     val viewModel: HomeViewModel = viewModel()
     val categories by viewModel.categories.collectAsState()
@@ -69,6 +77,10 @@ fun HomeScreen(
     var showProfileMenu by remember { mutableStateOf(false) }
     var showNotificationMenu by remember { mutableStateOf(false) }
     var showSettingsMenu by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+
 
     Box(
         modifier = Modifier
@@ -76,12 +88,19 @@ fun HomeScreen(
             .background(gradientBrush)
     ) {
         Scaffold(
-            bottomBar = {
-                BottomNavigationBar(navController)
-            },
-            containerColor = Color.Transparent
+            bottomBar = { BottomNavigationBar(navController) },
+            containerColor = Color.Transparent,
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                        .align(Alignment.BottomCenter)
+                )
+            }
         ) { paddingValues ->
-            Column(
+        Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
@@ -150,17 +169,18 @@ fun HomeScreen(
                                 navController.navigate("audiobookDetail/$bookJson")
                             },
                             onFavouriteClick = { uId, bookId ->
-                                bookViewModel.addToFavorites(uId, bookId) { success ->
-                                    if (success) {
-                                        // Ví dụ: show thông báo
-                                        println("Đã thêm vào yêu thích")
-                                    } else {
-                                        println("Thêm thất bại")
-                                        println(uId)
-                                        println(bookId)
+                                if (uId != null) {
+                                    bookViewModel.toggleFavourite(uId, bookId) { success, isNowFavorite ->
+                                        coroutineScope.launch {
+                                            val message = when {
+                                                success && isNowFavorite -> "✅ Đã thêm vào yêu thích"
+                                                success && !isNowFavorite -> "✅ Đã xóa khỏi yêu thích"
+                                                else -> "Thao tác thất bại"
+                                            }
+                                            snackbarHostState.showSnackbar(message)
+                                        }
                                     }
                                 }
-
                             },
                             isFavourite = bookViewModel.isFavorite(book.id)
                         )

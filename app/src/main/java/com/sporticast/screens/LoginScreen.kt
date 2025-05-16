@@ -100,17 +100,20 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel = viewMod
                 Button(
                     onClick = {
                         viewModel.login(
+                            onOtpRequired = { email ->
+                                navController.navigate("verifyCodeScreen/$email") },
                             onAdminSuccess = {
                                 navController.navigate("adminScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo("loginScreen") { inclusive = true }
                                 }
                             },
                             onUserSuccess = {
                                 navController.navigate("homeScreen") {
-                                    popUpTo(0) { inclusive = true }
+                                    popUpTo("loginScreen") { inclusive = true }
                                 }
                             }
                         )
+
                     },
                     modifier = Modifier
                         .width(160.dp)

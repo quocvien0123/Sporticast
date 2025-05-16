@@ -21,7 +21,15 @@ interface BookApi {
         @Path("bookId") bookId: Long
     ): Response<ResponseBody>
 
+    @DELETE("users/{userId}/favorites/{bookId}")
+    suspend fun removeFromFavorites(
+        @Path("userId") userId: Long?,
+        @Path("bookId") bookId: Long
+    ): Response<ResponseBody>
+
+
     @GET("users/{userId}/favorites")
     suspend fun getFavorites(@Path("userId") userId: Long): Response<List<Book>>
+
 
 }

@@ -17,6 +17,7 @@ class AuthViewModel : ViewModel() {
     var password by mutableStateOf("")
     var isLoading by mutableStateOf(false)
     var errorMessage by mutableStateOf<String?>(null)
+    val isVerified = mutableStateOf(false)
 
     // Lấy SharedPreferences một lần
     private val prefs = App.instance.getSharedPreferences("auth", Context.MODE_PRIVATE)
@@ -31,6 +32,7 @@ class AuthViewModel : ViewModel() {
 
 
     fun login(
+        onOtpRequired: (email: String) -> Unit,
         onAdminSuccess: () -> Unit,
         onUserSuccess: () -> Unit
     ) {
@@ -42,17 +44,25 @@ class AuthViewModel : ViewModel() {
                 val response = RetrofitService.loginApi.loginUser(LoginRequest(email, password))
                 val body = response.body()
 
-                if (response.isSuccessful && body?.message == "Login Success") {
-                    // ✅ Lưu token và quyền admin
-                    saveAuthData(body.token, body.is_admin, body.user_id)
-
-                    if (body.is_admin) {
-                        onAdminSuccess()
-                    } else {
-                        onUserSuccess()
+                if (response.isSuccessful && body != null) {
+                    when (body.status) {
+                        "verify" -> {
+                            body.email?.let { onOtpRequired(it) }
+                        }
+                        "success" -> {
+                            saveAuthData(body.token, body.is_admin, body.user_id)
+                            if (body.is_admin) onAdminSuccess() else onUserSuccess()
+                        }
+                        "error" -> {
+                            errorMessage = body.message ?: "Login failed"
+                        }
+                        else -> {
+                            errorMessage = body.message ?: "Login failed"
+                        }
                     }
                 } else {
-                    errorMessage = body?.message ?: "Login failed"
+                    val errorMsg = response.errorBody()?.string()
+                    errorMessage = "Login failed"
                 }
             } catch (e: Exception) {
                 errorMessage = "Network error: ${e.localizedMessage}"
@@ -85,5 +95,29 @@ class AuthViewModel : ViewModel() {
         val id = prefs.getLong("user_id", -1)
         return if (id != -1L) id else null
     }
+
+    fun verifyOtpCode(email: String, code: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            isLoading = true
+            errorMessage = null
+
+            try {
+                val response = RetrofitService.loginApi.verifyCode(email, code)
+                if (response.code() == 200) {
+                    onSuccess()
+                } else if (response.code() == 400) {
+                    errorMessage = response.body()?.message ?: "Mã không hợp lệ hoặc đã hết hạn"
+                } else {
+                    errorMessage = "Đã xảy ra lỗi không xác định: ${response.code()}"
+                }
+
+            } catch (e: Exception) {
+                errorMessage = "Lỗi mạng: ${e.localizedMessage}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
 
 }

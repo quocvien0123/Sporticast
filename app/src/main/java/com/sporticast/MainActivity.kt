@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.produceState
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,16 +18,14 @@ import com.sporticast.screens.home.HomeScreen
 import com.sporticast.screens.LoginScreen
 import com.sporticast.screens.ProfileScreen
 import com.sporticast.screens.RegisterScreen
-import com.sporticast.screens.WelcomeScreen
 import com.sporticast.screens.admin.AddOrEditBookScreen
 import com.sporticast.screens.admin.AdminDrawerScreen
+import com.sporticast.screens.auth.VerifyCodeScreen
 import com.sporticast.screens.home.AudiobookDetailScreen
 import com.sporticast.screens.home.PlayListScreen
 import com.sporticast.screens.home.PlayerScreen
 import com.sporticast.viewmodel.AuthViewModel
-
-import com.sporticast.viewmodel.HomeViewModel
-import kotlinx.serialization.decodeFromString
+import com.sporticast.viewmodel.ProfileViewModel
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -49,7 +46,7 @@ fun AppNavigator() {
     val authViewModel: AuthViewModel = viewModel()
     val isAdmin = authViewModel.isAdmin()
     val isLoggedIn = authViewModel.isLoggedIn()
-
+    val profileViewModel: ProfileViewModel = viewModel()
     val startDest = when {
         !isLoggedIn -> "loginScreen"
         isAdmin -> "adminScreen"
@@ -62,7 +59,11 @@ fun AppNavigator() {
     ) {
 
         composable("profile") {
-            ProfileScreen(navController)
+            ProfileScreen(
+                navController,
+                viewModel = profileViewModel,
+                userId = authViewModel.getUserId() ?: 0L
+            )
         }
 
         composable("favorites") {
@@ -92,6 +93,17 @@ fun AppNavigator() {
         composable("adminScreen") {
             AdminDrawerScreen(navController)
         }
+
+        composable("verifyCodeScreen/{email}") { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            VerifyCodeScreen(
+                navController = navController,
+                email = email
+            )
+        }
+
+
+
 
         composable(
             route = "player/{title}/{author}/{duration}/{audioUrl}",

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,16 +22,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.sporticast.screens.home.BottomNavigationBar
 import com.sporticast.ui.theme.colorLg_Rg
+import com.sporticast.viewmodel.ProfileViewModel
 
 @Composable
-fun ProfileScreen(navController: NavController,
-                  ) {
+fun ProfileScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel,
+    userId: Long
+) {
+    LaunchedEffect(Unit) {
+        viewModel.fetchUserInfo(userId)
+    }
+
+    val user = viewModel.userInfo
+
     Scaffold(
-        bottomBar = {
-            BottomNavigationBar(navController)
-        },
+        bottomBar = { BottomNavigationBar(navController) },
         containerColor = Color.Transparent
     ) { innerPadding ->
         Column(
@@ -41,8 +51,6 @@ fun ProfileScreen(navController: NavController,
                 .padding(top = 24.dp)
                 .padding(innerPadding)
         ) {
-
-
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -68,11 +76,7 @@ fun ProfileScreen(navController: NavController,
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Avatar & Name
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Box(
                     modifier = Modifier
                         .size(96.dp)
@@ -80,18 +84,26 @@ fun ProfileScreen(navController: NavController,
                         .background(Color(0xFFE57399)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = "A",
-                        fontSize = 36.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
+                    if (user?.avatar?.isNotBlank() == true) {
+                        AsyncImage(
+                            model = user.avatar,
+                            contentDescription = "Avatar",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Text(
+                            text = user?.name?.firstOrNull()?.uppercase() ?: "U",
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "atunas",
+                    text = user?.name ?: "Loading...",
                     color = Color.White,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold
@@ -107,10 +119,7 @@ fun ProfileScreen(navController: NavController,
             }
 
             Spacer(modifier = Modifier.height(50.dp))
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = "Không có hoạt động gần đây.",
                     color = Color.White,
@@ -123,10 +132,6 @@ fun ProfileScreen(navController: NavController,
                     fontSize = 14.sp
                 )
             }
-
-
-
         }
     }
 }
-

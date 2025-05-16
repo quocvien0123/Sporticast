@@ -49,12 +49,12 @@ fun AddOrEditBookScreen(
 
     val textFieldColors = OutlinedTextFieldDefaults.colors(
         focusedTextColor = Color.White,
-        unfocusedTextColor = Color.White,
+        unfocusedTextColor = Color.White.copy(alpha = 0.7f),
         cursorColor = Color.White,
-        focusedBorderColor = Color.Cyan,
-        unfocusedBorderColor = Color.LightGray,
-        focusedLabelColor = Color.Cyan,
-        unfocusedLabelColor = Color.LightGray
+        focusedLabelColor = Color.White,
+        unfocusedLabelColor = Color.LightGray,
+        focusedPlaceholderColor = Color.LightGray,
+        unfocusedPlaceholderColor = Color.LightGray
     )
 
     Scaffold(
@@ -97,14 +97,14 @@ fun AddOrEditBookScreen(
                     Text(text, color = Color.White, fontSize = 14.sp)
                 }
 
-                OutlinedTextField(value = title, onValueChange = { title = it }, label = label("Tiêu đề"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = author, onValueChange = { author = it }, label = label("Tác giả"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = category, onValueChange = { category = it }, label = label("Thể loại"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = audioUrl, onValueChange = { audioUrl = it }, label = label("Audio URL"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = description, onValueChange = { description = it }, label = label("Mô tả"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = duration, onValueChange = { duration = it }, label = label("Thời lượng"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = imageUrl, onValueChange = { imageUrl = it }, label = label("Hình ảnh URL"), modifier = fieldModifier, colors = textFieldColors)
-                OutlinedTextField(value = language, onValueChange = { language = it }, label = label("Ngôn ngữ"), modifier = fieldModifier, colors = textFieldColors)
+                OutlinedTextField(value = title, onValueChange = { title = it }, label = label("Tiêu đề"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp),)
+                OutlinedTextField(value = author, onValueChange = { author = it }, label = label("Tác giả"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
+                OutlinedTextField(value = category, onValueChange = { category = it }, label = label("Thể loại"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
+                OutlinedTextField(value = audioUrl, onValueChange = { audioUrl = it }, label = label("Audio URL"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
+                OutlinedTextField(value = description, onValueChange = { description = it }, label = label("Mô tả"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
+                OutlinedTextField(value = duration, onValueChange = { duration = it }, label = label("Thời lượng"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
+                OutlinedTextField(value = imageUrl, onValueChange = { imageUrl = it }, label = label("Hình ảnh URL"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
+                OutlinedTextField(value = language, onValueChange = { language = it }, label = label("Ngôn ngữ"), modifier = fieldModifier, colors = textFieldColors,shape = RoundedCornerShape(10.dp))
                 OutlinedTextField(
                     value = listenCount.toString(),
                     onValueChange = { listenCount = it.toIntOrNull() ?: 0 },

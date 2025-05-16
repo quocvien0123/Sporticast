@@ -23,8 +23,11 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,14 +38,16 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.sporticast.model.Book
 import com.sporticast.viewmodel.BookViewModel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 
 @Composable
 fun FeaturedContentItem(
     book: Book,
-    userId: Long?, // Thêm userId để gửi lên backend
+    userId: Long?,
     onClick: () -> Unit,
-    onFavouriteClick: (Long, Long) -> Unit, // <-- Bạn đã thêm dòng này
+    onFavouriteClick: (Long, Long) -> Unit,
     isFavourite: Boolean,
     bookViewModel: BookViewModel
 ) {
@@ -54,14 +59,12 @@ fun FeaturedContentItem(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color(0xFF1E1E2F)
-        )
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E2F))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight() // Rất quan trọng để không bị ép chiều cao
+                .wrapContentHeight()
                 .padding(16.dp)
         ) {
             Box(
@@ -93,68 +96,29 @@ fun FeaturedContentItem(
                     maxLines = 5,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = book.author,
-                    color = Color.Gray,
-                    fontSize = 16.sp,
-                    maxLines = 1
-                )
-                Text(
-                    text = book.category,
-                    color = Color.Gray,
-                    fontSize = 16.sp,
-                    maxLines = 1
-                )
-
+                Text(text = book.author, color = Color.Gray, fontSize = 16.sp, maxLines = 1)
+                Text(text = book.category, color = Color.Gray, fontSize = 16.sp, maxLines = 1)
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Timer,
-                        contentDescription = "Duration",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(16.dp)
-                    )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Timer, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = book.duration,
-                        color = Color.Gray,
-                        fontSize = 12.sp
-                    )
+                    Text(book.duration, color = Color.Gray, fontSize = 12.sp)
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = "Rating",
-                        tint = Color(0xFFFFD700),
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFD700), modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = book.rating.toString(),
-                        color = Color.Gray,
-                        fontSize = 12.sp
-                    )
+                    Text(book.rating.toString(), color = Color.Gray, fontSize = 12.sp)
+
                     Spacer(modifier = Modifier.width(8.dp))
-                    Icon(
-                        imageVector = Icons.Default.Headphones,
-                        contentDescription = "Listen Count",
-                        tint = Color.Gray,
-                        modifier = Modifier.size(16.dp)
-                    )
+                    Icon(Icons.Default.Headphones, contentDescription = null, tint = Color.Gray, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = book.listenCount.toString(),
-                        color = Color.Gray,
-                        fontSize = 12.sp
-                    )
+                    Text(book.listenCount.toString(), color = Color.Gray, fontSize = 12.sp)
                 }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Trái tim cho yêu thích
             Icon(
                 imageVector = if (isFavourite) Icons.Filled.Favorite else Icons.Filled.FavoriteBorder,
                 contentDescription = "Favorite",
@@ -165,7 +129,9 @@ fun FeaturedContentItem(
                     .padding(8.dp)
                     .align(Alignment.CenterVertically)
                     .clickable {
-                        onFavouriteClick(userId!!, book.id)
+                        if (userId != null) {
+                            onFavouriteClick(userId, book.id)
+                        }
                     }
             )
         }

@@ -14,11 +14,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.AuthViewModel
 import kotlinx.coroutines.launch
 
-data class MenuItemData(val title: String, val icon: ImageVector)
+data class MenuItemData(val title: String, val icon: ImageVector, val route: String)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,10 +32,10 @@ fun AdminDrawerScreen(
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    var selectedItem by remember { mutableStateOf("Người dùng") }
+    val drawerNavController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Lắng nghe kết quả trả về từ BooksScreen
+    // Lắng nghe kết quả từ màn hình thêm/cập nhật sách
     val resultFlow = navController
         .currentBackStackEntry
         ?.savedStateHandle
@@ -50,11 +54,13 @@ fun AdminDrawerScreen(
     }
 
     val menuItems = listOf(
-        MenuItemData("Người dùng", Icons.Default.Person),
-        MenuItemData("Sách nói điện tử", Icons.Default.Book),
-        MenuItemData("Cài đặt", Icons.Default.Settings),
-        MenuItemData("Đăng xuất", Icons.Default.ExitToApp)
+        MenuItemData("Người dùng", Icons.Default.Person, "usersScreen"),
+        MenuItemData("Sách nói điện tử", Icons.Default.Book, "booksScreen"),
+        MenuItemData("Cài đặt", Icons.Default.Settings, "settingsScreen"),
+        MenuItemData("Đăng xuất", Icons.Default.ExitToApp, "logout")
     )
+
+    var selectedRoute by remember { mutableStateOf("usersScreen") }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -85,15 +91,19 @@ fun AdminDrawerScreen(
                             icon = {
                                 Icon(item.icon, contentDescription = item.title, tint = Color.White)
                             },
-                            selected = item.title == selectedItem,
+                            selected = selectedRoute == item.route,
                             onClick = {
-                                selectedItem = item.title
                                 scope.launch { drawerState.close() }
-                                if (item.title == "Đăng xuất") {
+                                if (item.route == "logout") {
                                     authViewModel.logout {
                                         navController.navigate("loginScreen") {
                                             popUpTo(0) { inclusive = true }
                                         }
+                                    }
+                                } else {
+                                    selectedRoute = item.route
+                                    drawerNavController.navigate(item.route) {
+                                        launchSingleTop = true
                                     }
                                 }
                             },
@@ -116,7 +126,10 @@ fun AdminDrawerScreen(
             containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
-                    title = { Text(selectedItem, color = Color.White) },
+                    title = {
+                        val currentItem = menuItems.find { it.route == selectedRoute }
+                        Text(currentItem?.title ?: "", color = Color.White)
+                    },
                     navigationIcon = {
                         IconButton(onClick = { scope.launch { drawerState.open() } }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu", tint = Color.White)
@@ -133,19 +146,39 @@ fun AdminDrawerScreen(
                     .padding(innerPadding)
                     .fillMaxSize()
                     .background(Brush.verticalGradient(colorLg_Rg))
-                    .padding(16.dp)
             ) {
                 SnackbarHost(
                     hostState = snackbarHostState,
                     modifier = Modifier.align(Alignment.TopCenter)
                 )
-                when (selectedItem) {
-                    "Người dùng" -> UsersScreen()
-                    "Sách nói điện tử" -> BooksScreen(navController = navController)
-                    "Cài đặt" -> Text("⚙️ Cài đặt hệ thống", color = Color.White)
-                    "Đăng xuất" -> Text("🚪 Đăng xuất...", color = Color.White)
-                }
+
+                // 🧭 Điều hướng màn hình bên trong drawer
+                AdminNavHost(
+                    navController = drawerNavController,
+                    parentNavController = navController // để truyền lại nếu cần
+                )
             }
+        }
+    }
+}
+
+@Composable
+fun AdminNavHost(
+    navController: NavHostController,
+    parentNavController: NavController
+) {
+    NavHost(
+        navController = navController,
+        startDestination = "usersScreen"
+    ) {
+        composable("usersScreen") {
+            UsersScreen()
+        }
+        composable("booksScreen") {
+            BooksScreen(navController = parentNavController)
+        }
+        composable("settingsScreen") {
+            Text("⚙️ Cài đặt hệ thống", color = Color.White)
         }
     }
 }

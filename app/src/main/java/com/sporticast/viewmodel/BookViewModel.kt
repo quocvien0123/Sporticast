@@ -29,22 +29,56 @@ class BookViewModel : ViewModel() {
     private val _favoriteBooks = mutableStateOf<List<Book>>(emptyList())
     val favoriteBooks: State<List<Book>> = _favoriteBooks
 
-    fun toggleFavourite(userId: Long, bookId: Long) {
+    fun toggleFavourite(userId: Long, bookId: Long, onResult: (Boolean, Boolean) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val isCurrentlyFavourite = _favoriteStates[bookId] == true
 
+                if (isCurrentlyFavourite) {
+                    val response = bookApi.removeFromFavorites(userId, bookId)
+                    if (response.isSuccessful) {
+                        _favoriteStates[bookId] = false
+                        _favoriteBooks.value = _favoriteBooks.value.filterNot { it.id == bookId }
+                        onResult(true, false) // success, now it's not favorite
+                    } else {
+                        onResult(false, isCurrentlyFavourite)
+                    }
+                } else {
+                    val response = bookApi.addToFavorites(userId, bookId)
+                    if (response.isSuccessful) {
+                        _favoriteStates[bookId] = true
+                        onResult(true, true) // success, now it's favorite
+                    } else {
+                        onResult(false, isCurrentlyFavourite)
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                onResult(false, _favoriteStates[bookId] == true)
+            }
+        }
     }
+
+
 
     fun loadFavorites(userId: Long) {
         viewModelScope.launch {
             try {
                 val response = bookApi.getFavorites(userId)
                 if (response.isSuccessful) {
-                    _favoriteBooks.value = response.body() ?: emptyList()
+                    val favorites = response.body() ?: emptyList()
+                    _favoriteBooks.value = favorites
+                    _favoriteStates.clear()
+                    favorites.forEach { book ->
+                        _favoriteStates[book.id] = true
+                    }
                 }
             } catch (e: Exception) {
-                // handle error
+                e.printStackTrace()
             }
         }
     }
+
 
 
     fun isFavorite(bookId: Long): Boolean = _favoriteStates[bookId] == true

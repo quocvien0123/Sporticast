@@ -33,9 +33,32 @@ fun BooksScreen(viewModel: BookViewModel = viewModel(), navController: NavContro
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(Unit) {
-        viewModel.loadBook()
+    val currentBackStackEntry = navController.currentBackStackEntry
+    val savedStateHandle = currentBackStackEntry?.savedStateHandle
+
+    LaunchedEffect(navController.currentBackStackEntry?.savedStateHandle?.get<String>("bookAddResult")) {
+        val result = navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.remove<String>("bookAddResult")
+
+        result?.let {
+            val message = when (it) {
+                "success" -> "✅ Đã thêm sách thành công!"
+                "updated" -> "💾 Đã cập nhật sách thành công!"
+                else -> null
+            }
+            message?.let {
+                scope.launch {
+                    snackbarHostState.showSnackbar(it)
+                }
+            }
+
+            // Reload danh sách sách sau khi thêm/cập nhật
+            viewModel.loadBook()
+        }
     }
+
+
 
     val books = viewModel.loadBook.collectAsState().value
 
