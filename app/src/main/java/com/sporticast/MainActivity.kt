@@ -26,6 +26,7 @@ import com.sporticast.screens.home.PlayListScreen
 import com.sporticast.screens.home.PlayerScreen
 import com.sporticast.viewmodel.AuthViewModel
 import com.sporticast.viewmodel.ProfileViewModel
+
 import kotlinx.serialization.json.Json
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "ComposableDestinationInComposeScope")
 @Composable
 fun AppNavigator() {
     val authViewModel: AuthViewModel = viewModel()
@@ -66,15 +67,16 @@ fun AppNavigator() {
             )
         }
 
+        composable("profile") { ProfileScreen(navController) }
         composable("favorites") {
-            val authViewModel: AuthViewModel = viewModel()
-            val userId = authViewModel.getUserId();
-            if (userId != null) {
-                FavoritesScreen(navController = navController, userId = userId)
-            } else {
-                // Bạn có thể xử lý lỗi ở đây (ví dụ hiển thị thông báo hoặc điều hướng về login)
-            }
+            val userId = viewModel<AuthViewModel>().getUserId()
+            if (userId != null) FavoritesScreen(navController, userId)
         }
+        composable("playlist") { PlayListScreen(navController) }
+        composable("loginScreen") { LoginScreen(navController) }
+        composable("registerScreen") { RegisterScreen(navController) }
+        composable("homeScreen") { HomeScreen(navController) }
+        composable("adminScreen") { AdminDrawerScreen(navController) }
 
         composable("playlist") {
             PlayListScreen(navController)
@@ -105,33 +107,38 @@ fun AppNavigator() {
 
 
 
+        // --- Player screen
         composable(
-            route = "player/{title}/{author}/{duration}/{audioUrl}",
+            route = "player/{title}/{author}/{duration}/{audioUrl}/{audiobookId}",
             arguments = listOf(
                 navArgument("title") { type = NavType.StringType },
                 navArgument("author") { type = NavType.StringType },
                 navArgument("duration") { type = NavType.StringType },
-                navArgument("audioUrl") { type = NavType.StringType }
+                navArgument("audioUrl") { type = NavType.StringType },
+                navArgument("audiobookId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
             val title = backStackEntry.arguments?.getString("title") ?: ""
             val author = backStackEntry.arguments?.getString("author") ?: ""
             val duration = backStackEntry.arguments?.getString("duration") ?: ""
-            val encodedAudioUrl = backStackEntry.arguments?.getString("audioUrl") ?: ""
-            val audioUrl = URLDecoder.decode(encodedAudioUrl, StandardCharsets.UTF_8.toString())
+            val audioUrl = URLDecoder.decode(
+                backStackEntry.arguments?.getString("audioUrl") ?: "",
+                StandardCharsets.UTF_8.toString()
+            )
+            val audiobookId = backStackEntry.arguments?.getInt("audiobookId") ?: 0
 
             PlayerScreen(
                 title = title,
                 author = author,
                 duration = duration,
                 audioUrl = audioUrl,
-                navController = navController
+                navController = navController,
+                audiobookId = audiobookId,
+                chapterViewModel = viewModel()
             )
         }
-        composable("addOrEditBook") {
-            AddOrEditBookScreen(navController = navController)
-        }
 
+        // --- Add or Edit Book
         composable(
             "addOrEditBook/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
@@ -143,27 +150,18 @@ fun AppNavigator() {
             AddOrEditBookScreen(book = book, navController = navController)
         }
 
-
-
+        // --- Audiobook Detail
         composable(
             route = "audiobookDetail/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
-        )
-        { backStackEntry ->
+        ) { backStackEntry ->
             val bookJson = backStackEntry.arguments?.getString("bookJson") ?: ""
             val bookState = produceState<Book?>(initialValue = null, bookJson) {
-                value = Json.decodeFromString<Book>(bookJson)
+                value = Json.decodeFromString(bookJson)
             }
             bookState.value?.let { book ->
                 AudiobookDetailScreen(book = book, navController = navController)
             }
-
         }
-
-
     }
 }
-
-
-
-

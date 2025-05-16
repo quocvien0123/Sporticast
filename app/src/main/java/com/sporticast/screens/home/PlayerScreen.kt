@@ -1,6 +1,5 @@
 package com.sporticast.screens.home
 
-import android.media.MediaPlayer
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,13 +16,19 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.sporticast.R
 import com.sporticast.ui.theme.colorLg_Rg
+import com.sporticast.viewmodel.ChapterViewModel
 import kotlinx.coroutines.delay
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -32,62 +37,75 @@ import java.nio.charset.StandardCharsets
 @Composable
 fun PlayerScreen(
     title: String,
-    author: String,
     duration: String,
+    author: String,
     audioUrl: String,
-    navController: NavController
+    audiobookId: Int,
+    navController: NavController,
+    chapterViewModel: ChapterViewModel = viewModel()
 ) {
-    var isPlaying by remember { mutableStateOf(false) }
-    var isPrepared by remember { mutableStateOf(false) }
-    var sliderPosition by remember { mutableStateOf(0f) }
-    var timeElapsed by remember { mutableStateOf(0) }
-    var dynamicDuration by remember { mutableStateOf("00:00") }
-
-    val rotation = remember { Animatable(0f) }
-
     fun decodeText(text: String): String {
         return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
     }
 
-    val mediaPlayer = remember { MediaPlayer() }
+    val context = LocalContext.current
+    val exoPlayer = remember {
+        ExoPlayer.Builder(context).build().apply {
+            setMediaItem(MediaItem.fromUri(audioUrl))
+            prepare()
+        }
+    }
 
-    // Load async audio
-    LaunchedEffect(audioUrl) {
-        try {
-            mediaPlayer.reset()
-            mediaPlayer.setDataSource(audioUrl)
-            mediaPlayer.setOnPreparedListener {
-                isPrepared = true
-                if (isPlaying) {
-                    mediaPlayer.start()
+    // Trạng thái UI liên quan ExoPlayer
+    var isPrepared by remember { mutableStateOf(false) }
+    val isPlayingState = remember { mutableStateOf(false) }
+    var sliderPosition by remember { mutableStateOf(0f) }
+    var timeElapsed by remember { mutableStateOf(0) }
+    var totalDuration by remember { mutableStateOf(0) }
+    val rotation = remember { Animatable(0f) }
+
+    val chapters by chapterViewModel.chapterList.collectAsState()
+
+    // Load danh sách chương
+    LaunchedEffect(audiobookId) {
+        chapterViewModel.loadChapter(audiobookId.toString())
+    }
+
+    // Listener cập nhật trạng thái ExoPlayer
+    DisposableEffect(exoPlayer) {
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(state: Int) {
+                isPrepared = (state == Player.STATE_READY)
+                totalDuration = if (exoPlayer.duration > 0) (exoPlayer.duration / 1000).toInt() else 0
+                if (state == Player.STATE_ENDED) {
+                    isPlayingState.value = false
                 }
             }
-            mediaPlayer.prepareAsync()
-        } catch (e: Exception) {
-            e.printStackTrace()
+            override fun onIsPlayingChanged(isPlayingNow: Boolean) {
+                isPlayingState.value = isPlayingNow
+            }
         }
-    }
-
-    DisposableEffect(Unit) {
+        exoPlayer.addListener(listener)
         onDispose {
-            if (mediaPlayer.isPlaying) mediaPlayer.stop()
-            mediaPlayer.release()
+            exoPlayer.removeListener(listener)
+            exoPlayer.release()
         }
     }
 
-    LaunchedEffect(isPlaying, isPrepared) {
-        while (isPlaying && isPrepared) {
+    // Cập nhật slider và thời gian chạy
+    LaunchedEffect(isPlayingState.value, isPrepared) {
+        while (isPlayingState.value && isPrepared) {
             delay(1000)
-            timeElapsed = mediaPlayer.currentPosition / 1000
-            sliderPosition = timeElapsed.toFloat() / (mediaPlayer.duration / 1000f)
-            val minutes = timeElapsed / 60
-            val seconds = timeElapsed % 60
-            dynamicDuration = String.format("%02d:%02d", minutes, seconds)
+            timeElapsed = (exoPlayer.currentPosition / 1000).toInt()
+            if (totalDuration > 0) {
+                sliderPosition = timeElapsed.toFloat() / totalDuration.toFloat()
+            }
         }
     }
 
-    LaunchedEffect(isPlaying) {
-        if (isPlaying) {
+    // Animation xoay hình khi đang phát
+    LaunchedEffect(isPlayingState.value) {
+        if (isPlayingState.value) {
             rotation.animateTo(
                 targetValue = 360f,
                 animationSpec = infiniteRepeatable(
@@ -107,19 +125,15 @@ fun PlayerScreen(
             .background(Brush.verticalGradient(colors = colorLg_Rg)),
         topBar = {
             TopAppBar(
-                title = { Text(text = "Đang phát", color = Color.White, fontSize = 20.sp) },
+                title = {
+                    Text(text = "Đang phát", color = Color.White, fontSize = 20.sp)
+                },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.White
-                        )
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.White)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
             )
         },
         containerColor = Color.Transparent
@@ -144,7 +158,7 @@ fun PlayerScreen(
             Spacer(modifier = Modifier.height(50.dp))
 
             Text(
-                text = "${decodeText(title)}",
+                text = decodeText(title),
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp
@@ -161,7 +175,11 @@ fun PlayerScreen(
             }
 
             Text(
-                text = dynamicDuration,
+                text = String.format(
+                    "%02d:%02d / %02d:%02d",
+                    timeElapsed / 60, timeElapsed % 60,
+                    totalDuration / 60, totalDuration % 60
+                ),
                 color = Color.White,
                 fontSize = 16.sp,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -171,15 +189,17 @@ fun PlayerScreen(
                 value = sliderPosition,
                 onValueChange = {
                     sliderPosition = it
-                    val newTime = (it * (mediaPlayer.duration / 1000)).toInt()
-                    mediaPlayer.seekTo(newTime * 1000)
-                    timeElapsed = newTime
+                    if (isPrepared && totalDuration > 0) {
+                        val newPosition = (it * totalDuration * 1000).toLong()
+                        exoPlayer.seekTo(newPosition)
+                        timeElapsed = (newPosition / 1000).toInt()
+                    }
                 },
                 valueRange = 0f..1f,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -188,54 +208,64 @@ fun PlayerScreen(
             ) {
                 IconButton(
                     onClick = {
-                        val rewind = (mediaPlayer.currentPosition - 10000).coerceAtLeast(0)
-                        mediaPlayer.seekTo(rewind)
-                        timeElapsed = rewind / 1000
+                        val rewind = (exoPlayer.currentPosition - 10000).coerceAtLeast(0)
+                        exoPlayer.seekTo(rewind)
+                        timeElapsed = (rewind / 1000).toInt()
                     },
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(30.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Replay10,
-                        contentDescription = "Rewind 10s",
-                        tint = Color.White,
-                        modifier = Modifier.size(50.dp)
-                    )
+                    Icon(Icons.Default.Replay10, contentDescription = "Rewind 10s", tint = Color.White, modifier = Modifier.size(50.dp))
                 }
 
                 IconButton(
                     onClick = {
-                        isPlaying = !isPlaying
-                        if (isPrepared) {
-                            if (isPlaying) mediaPlayer.start() else mediaPlayer.pause()
-                        }
+                        if (exoPlayer.isPlaying) exoPlayer.pause() else exoPlayer.play()
                     },
-                    modifier = Modifier.size(80.dp)
+                    modifier = Modifier.size(30.dp)
                 ) {
                     Icon(
-                        imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                        imageVector = if (isPlayingState.value) Icons.Default.Pause else Icons.Default.PlayArrow,
                         contentDescription = "Play/Pause",
                         tint = Color.White,
-                        modifier = Modifier.size(80.dp)
+                        modifier = Modifier.size(30.dp)
                     )
                 }
 
                 IconButton(
                     onClick = {
-                        val forward = (mediaPlayer.currentPosition + 10000)
-                            .coerceAtMost(mediaPlayer.duration)
-                        mediaPlayer.seekTo(forward)
-                        timeElapsed = forward / 1000
+                        val forward = (exoPlayer.currentPosition + 10000).coerceAtMost(exoPlayer.duration)
+                        exoPlayer.seekTo(forward)
+                        timeElapsed = (forward / 1000).toInt()
                     },
-                    modifier = Modifier.size(60.dp)
+                    modifier = Modifier.size(30.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Forward10,
-                        contentDescription = "Forward 10s",
-                        tint = Color.White,
-                        modifier = Modifier.size(50.dp)
-                    )
+                    Icon(Icons.Default.Forward10, contentDescription = "Forward 10s", tint = Color.White, modifier = Modifier.size(50.dp))
                 }
             }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "Danh sách chương",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            ChapterList(
+                chapters = chapters,
+                onChapterClick = { selectedChapter ->
+                    try {
+                        exoPlayer.stop()
+                        exoPlayer.clearMediaItems()
+                        exoPlayer.setMediaItem(MediaItem.fromUri(selectedChapter.audioUrl))
+                        exoPlayer.prepare()
+                        exoPlayer.play()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            )
         }
     }
 }

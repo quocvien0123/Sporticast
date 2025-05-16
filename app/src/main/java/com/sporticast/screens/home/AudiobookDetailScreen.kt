@@ -1,8 +1,10 @@
 package com.sporticast.screens.home
 
 import java.net.URLDecoder
+import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,24 +22,34 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.sporticast.model.Book
-import com.sporticast.ui.theme.colorLg_Rg
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import java.net.URLEncoder
+import com.sporticast.model.Book
+import com.sporticast.model.Chapter
+import com.sporticast.ui.theme.colorLg_Rg
+import com.sporticast.viewmodel.ChapterViewModel
 
 fun decodeText(text: String): String {
     return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AudiobookDetailScreen(book: Book, navController: NavController) {
     var selectedTabIndex by remember { mutableStateOf(0) }
     val tabs = listOf("Giới thiệu", "Mục lục", "Tương tự")
+
+    val viewModel: ChapterViewModel = viewModel()
+val chapters by viewModel.chapterList.collectAsState()
+
+    LaunchedEffect(book.id) {
+        viewModel.loadChapter(book.id.toString())
+    }
 
     Scaffold(
         modifier = Modifier
@@ -69,6 +81,7 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 .verticalScroll(rememberScrollState())
         ) {
             Spacer(modifier = Modifier.height(1.dp))
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -85,11 +98,8 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 
                 Spacer(modifier = Modifier.width(16.dp))
 
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                   Text(
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
                         text = decodeText(book.title),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
@@ -124,7 +134,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     }
                 }
 
-                // Nút "Đánh dấu" (giống như ảnh)
                 Button(
                     onClick = { /* TODO */ },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4B4B4B)),
@@ -147,7 +156,9 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                     val encodedTitle = URLEncoder.encode(book.title, "UTF-8")
                     val encodedAuthor = URLEncoder.encode(book.author, "UTF-8")
 
-                    navController.navigate("player/$encodedTitle/$encodedAuthor/${book.duration}/$encodedAudioUrl")
+                    navController.navigate("player/$encodedTitle/$encodedAuthor/${book.duration}/$encodedAudioUrl/${book.id}") {
+                        popUpTo("home") { inclusive = true }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -157,13 +168,7 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                 shape = RoundedCornerShape(28.dp),
                 color = Color.Transparent,
                 shadowElevation = 8.dp
-
-
-            )
-
-            {
-
-
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
@@ -183,10 +188,9 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp
                     )
-
                 }
-
             }
+
             Spacer(modifier = Modifier.height(40.dp))
 
             TabRow(
@@ -216,7 +220,15 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
 
             when (selectedTabIndex) {
                 0 -> TabIntroContent(book)
-                1 -> TabChaptersContent()
+                1 -> TabChaptersContent(
+                    chapters = chapters,
+                    onChapterClick = { chapter ->
+                        val encodedTitle = URLEncoder.encode(chapter.title, "UTF-8")
+                        val encodedUrl = URLEncoder.encode(chapter.audioUrl, "UTF-8")
+
+                        navController.navigate("playerChapter/$encodedTitle/${chapter.duration}/$encodedUrl")
+                    }
+                )
                 2 -> TabSimilarBooksContent()
             }
 
@@ -224,9 +236,6 @@ fun AudiobookDetailScreen(book: Book, navController: NavController) {
         }
     }
 }
-
-
-
 
 @Composable
 fun TabIntroContent(book: Book) {
@@ -246,7 +255,7 @@ fun TabIntroContent(book: Book) {
         InfoRow(label = "Thời lượng", value = book.duration)
         InfoRow(label = "Đánh giá", value = "⭐ ${book.rating}")
         InfoRow(label = "Nghe", value = "${book.listenCount} lần")
-        InfoRow(label = "Ngôn ngữ", value = book.language)
+        InfoRow(label = "Ngôn ngữ", value = decodeText(book.language))
     }
 }
 
@@ -275,14 +284,19 @@ fun InfoRow(label: String, value: String) {
 }
 
 @Composable
-fun TabChaptersContent() {
+fun TabChaptersContent(
+    chapters: List<Chapter>,
+    onChapterClick: (Chapter) -> Unit
+) {
     Column(modifier = Modifier.padding(16.dp)) {
-        repeat(6) { index ->
+        chapters.forEach { chapter ->
             Text(
-                text = "Chương ${index + 1}: Tên chương...",
+                text = "${chapter.title} (${chapter.duration})",
                 color = Color.White,
-                fontSize = 20.sp,
-                modifier = Modifier.padding(vertical = 4.dp)
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .padding(vertical = 4.dp)
+                    .clickable { onChapterClick(chapter) }
             )
         }
     }

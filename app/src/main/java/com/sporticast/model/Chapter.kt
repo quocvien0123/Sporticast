@@ -1,11 +1,13 @@
 package com.sporticast.model
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Chapter(
-    var id: Int? = null,
-    var audiobookId: Int? = null,
-    var title: String? = null,
-    var audioUrl: String? = null,
-    var duration: Int? = null,
-    var order: Int? = null,
-    var createdAt: String? = null
+    val id: Int,
+    val title: String,
+    val audiobookId: Int,
+    val audioUrl: String,
+    val duration: String,
+    val createdAt: String
 )

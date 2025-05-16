@@ -46,6 +46,9 @@ android {
 dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.material3:material3")
+    implementation ("androidx.compose.ui:ui:1.5.0")
+
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.0")
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
     implementation("androidx.navigation:navigation-compose:2.7.5")
     implementation(libs.androidx.core.ktx)

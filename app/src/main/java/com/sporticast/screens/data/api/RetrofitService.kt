@@ -24,6 +24,7 @@ object RetrofitService {
     val searchApi: SearchApi = retrofit.create(SearchApi::class.java)
     val adminManagerApi: AdminManagerApi = retrofit.create(AdminManagerApi::class.java)
     val userApi: UserApi = retrofit.create(UserApi::class.java)
+    val playerApi: PlayerApi = retrofit.create(PlayerApi::class.java)
 
 
 }
