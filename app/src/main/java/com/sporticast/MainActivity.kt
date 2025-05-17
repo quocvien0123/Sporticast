@@ -67,7 +67,6 @@ fun AppNavigator() {
             )
         }
 
-        composable("profile") { ProfileScreen(navController) }
         composable("favorites") {
             val userId = viewModel<AuthViewModel>().getUserId()
             if (userId != null) FavoritesScreen(navController, userId)
@@ -137,8 +136,12 @@ fun AppNavigator() {
                 chapterViewModel = viewModel()
             )
         }
+        //   ADD book
+        composable("addOrEditBook") {
+            AddOrEditBookScreen(book = null, navController = navController)
+        }
 
-        // --- Add or Edit Book
+        // --- Edit Book
         composable(
             "addOrEditBook/{bookJson}",
             arguments = listOf(navArgument("bookJson") { type = NavType.StringType })
@@ -163,5 +166,6 @@ fun AppNavigator() {
                 AudiobookDetailScreen(book = book, navController = navController)
             }
         }
+
     }
 }
