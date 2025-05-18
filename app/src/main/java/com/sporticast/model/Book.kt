@@ -15,4 +15,5 @@ data class Book(
     val description: String,
     val language: String,
     val audioUrl: String,
+    val chapterLimit: Int,
 )

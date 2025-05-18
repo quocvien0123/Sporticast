@@ -2,6 +2,8 @@ package com.sporticast.screens.data.api
 
 import com.sporticast.dto.request.BookRequest
 import com.sporticast.dto.request.User
+import com.sporticast.dto.request.admin.ChapterLimitRequest
+import com.sporticast.dto.request.admin.ChapterRequest
 import com.sporticast.model.Book
 import retrofit2.Response // Correct import
 import retrofit2.http.Body
@@ -28,6 +30,26 @@ interface AdminManagerApi {
     ): Response<Book>
     @DELETE("admin/delete_user/{id}")
     suspend fun deleteUser(@Path("id") id: Int): Response<Void>
+
+    @PUT("admin/{id}/chapter-limit")
+    suspend fun updateChapterLimit(
+        @Path("id") audiobookId: Int,
+        @Body request: ChapterLimitRequest
+    ): Response<Unit>
+
+    @POST("admin/{id}/chapters")
+    suspend fun addChapter(
+        @Path("id") audiobookId: Int,
+        @Body chapter: ChapterRequest
+    ): Response<Unit>
+    @GET("admin/{id}/chapter-count")
+    suspend fun getChapterCount(@Path("id") audiobookId: Int): Response<Int>
+
+    @GET("admin/audiobooks/{id}")
+    suspend fun getAudiobook(@Path("id") id: Int): Response<Book>  // Audiobook: data class bạn tự định nghĩa
+
+
+
 
 
 

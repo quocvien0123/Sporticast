@@ -20,6 +20,7 @@ import com.sporticast.screens.ProfileScreen
 import com.sporticast.screens.RegisterScreen
 import com.sporticast.screens.admin.AddOrEditBookScreen
 import com.sporticast.screens.admin.AdminDrawerScreen
+import com.sporticast.screens.admin.AudiobookManageScreen
 import com.sporticast.screens.auth.VerifyCodeScreen
 import com.sporticast.screens.home.AudiobookDetailScreen
 import com.sporticast.screens.home.PlayListScreen
@@ -140,7 +141,10 @@ fun AppNavigator() {
         composable("addOrEditBook") {
             AddOrEditBookScreen(book = null, navController = navController)
         }
-
+        composable("manage_audiobook/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull() ?: return@composable
+            AudiobookManageScreen(audiobookId = id)
+        }
         // --- Edit Book
         composable(
             "addOrEditBook/{bookJson}",

@@ -92,7 +92,8 @@ class HomeViewModel : ViewModel() {
                         category = dto.category,
                         description = dto.description,
                         audioUrl = dto.audioUrl,
-                        language = dto.language
+                        language = dto.language,
+                        chapterLimit = dto.chapterLimit
                     )
                 }
             } catch (e: Exception) {
@@ -128,7 +129,8 @@ class HomeViewModel : ViewModel() {
                         category = dto.category,
                         description = dto.description,
                         audioUrl = dto.audioUrl,
-                        language = dto.language
+                        language = dto.language,
+                        chapterLimit = dto.chapterLimit
                     )
                 }
             } catch (e: Exception) {
