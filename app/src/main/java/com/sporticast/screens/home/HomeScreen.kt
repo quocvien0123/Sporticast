@@ -56,8 +56,8 @@ fun HomeScreen(
     val userId = authViewModel.getUserId()
     val context = LocalContext.current
     LaunchedEffect(userId) {
+        TextToSpeechHelper.speakWithFPT(context, "Xin chào, chào mừng bạn đến với ứng dụng Spoticast")
         if (userId != null) {
-            TextToSpeechHelper.speakWithFPT(context, "Xin chào, chào mừng bạn đến với ứng dụng Spoticast")
             bookViewModel.loadFavorites(userId)
         }
     }
