@@ -10,11 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sporticast.Helper.TextToSpeechHelper
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.AuthViewModel
 import com.sporticast.viewmodel.BookViewModel
@@ -52,11 +54,14 @@ fun HomeScreen(
     )
 
     val userId = authViewModel.getUserId()
+    val context = LocalContext.current
     LaunchedEffect(userId) {
         if (userId != null) {
+            TextToSpeechHelper.speakWithFPT(context, "Xin chào, chào mừng bạn đến với ứng dụng Spoticast")
             bookViewModel.loadFavorites(userId)
         }
     }
+
     val bookViewModel: BookViewModel = viewModel()
     val viewModel: HomeViewModel = viewModel()
     val categories by viewModel.categories.collectAsState()
