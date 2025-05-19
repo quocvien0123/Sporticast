@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.sporticast.Helper.TextToSpeechHelper
 import com.sporticast.R
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.ChapterViewModel
@@ -44,11 +45,16 @@ fun PlayerScreen(
     navController: NavController,
     chapterViewModel: ChapterViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        TextToSpeechHelper.speakWithFPT(context, "Chúc bạn nghe sách vui vẻ")
+    }
+
     fun decodeText(text: String): String {
         return URLDecoder.decode(text, StandardCharsets.UTF_8.toString())
     }
 
-    val context = LocalContext.current
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(audioUrl))
@@ -68,6 +74,7 @@ fun PlayerScreen(
 
     // Load danh sách chương
     LaunchedEffect(audiobookId) {
+
         chapterViewModel.loadChapter(audiobookId.toString())
     }
 

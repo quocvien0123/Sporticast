@@ -18,10 +18,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sporticast.Helper.TextToSpeechHelper
 import com.sporticast.screens.home.BottomNavigationBar
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.screens.home.FeaturedContentItem
@@ -42,8 +44,20 @@ fun FavoritesScreen(
     val favorites by bookViewModel.favoriteBooks
 
     // Load danh sách yêu thích khi có userId mới
+  val context = LocalContext.current
+    val hasSpoken = remember { mutableStateOf(false) }
+    val isSpeaking = remember { mutableStateOf(false) }
+
     LaunchedEffect(userId) {
         bookViewModel.loadFavorites(userId)
+        if (!hasSpoken.value) {
+            hasSpoken.value = true
+            TextToSpeechHelper.speakWithFPT(
+                context,
+                "Đây là danh sách sách bạn yêu thích",
+                onComplete = { isSpeaking.value = false }
+            )
+        }
     }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()

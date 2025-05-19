@@ -18,11 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.sporticast.Helper.TextToSpeechHelper
 import com.sporticast.screens.home.BottomNavigationBar
 import com.sporticast.ui.theme.colorLg_Rg
 import com.sporticast.viewmodel.ProfileViewModel
@@ -33,8 +35,11 @@ fun ProfileScreen(
     viewModel: ProfileViewModel,
     userId: Long
 ) {
-    LaunchedEffect(Unit) {
+    val context = LocalContext.current
+   LaunchedEffect(Unit) {
+
         viewModel.fetchUserInfo(userId)
+        TextToSpeechHelper.speakWithFPT(context, "Xin chào, đây là trang cá nhân của bạn")
     }
 
     val user = viewModel.userInfo

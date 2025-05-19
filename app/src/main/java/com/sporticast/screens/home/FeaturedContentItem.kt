@@ -26,16 +26,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.sporticast.Helper.TextToSpeechHelper
 import com.sporticast.model.Book
 import com.sporticast.viewmodel.BookViewModel
 import kotlinx.coroutines.coroutineScope
@@ -51,13 +54,31 @@ fun FeaturedContentItem(
     isFavourite: Boolean,
     bookViewModel: BookViewModel
 ) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val isSpeaking = remember { mutableStateOf(false) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+            .clickable {
+                if (!isSpeaking.value) {
+                    isSpeaking.value = true
+                    coroutineScope.launch {
+                        TextToSpeechHelper.speakWithFPT(
+                            context,
+                            "Bạn đang nghe sách ${book.title} của tác giả ${book.author}"
+                                   ,
+                            onComplete = { isSpeaking.value = false }
+                        )
+                    }
+                    onClick()
+                }
+            },
+
+                shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E2F))
     ) {
@@ -131,6 +152,16 @@ fun FeaturedContentItem(
                     .clickable {
                         if (userId != null) {
                             onFavouriteClick(userId, book.id)
+                            coroutineScope.launch {
+                                val message = if (!isFavourite) {
+                                    "Đã thêm ${book.title} vào danh sách yêu thích"
+
+
+                                } else {
+                                    "Đã xóa ${book.title} khỏi danh sách yêu thích"
+                                }
+                                TextToSpeechHelper.speakWithFPT(context, message)
+                            }
                         }
                     }
             )

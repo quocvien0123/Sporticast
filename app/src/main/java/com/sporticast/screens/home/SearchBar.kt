@@ -18,7 +18,8 @@ import androidx.compose.ui.text.input.KeyboardType
 fun SearchBar(
     query: String,
     onQueryChanged: (String) -> Unit,
-    onSearchTriggered: () -> Unit
+    onSearchTriggered: () -> Unit,
+    onVoiceSearchTriggered: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
     OutlinedTextField(
@@ -31,9 +32,13 @@ fun SearchBar(
         leadingIcon = {
             Icon(Icons.Default.Search, contentDescription = null, tint = Color.White)
         },
+        trailingIcon = {
+            IconButton(onClick = { onVoiceSearchTriggered() }) {
+                Icon(Icons.Default.Mic, contentDescription = "Voice Search", tint = Color.White)
+            }
+        },
         shape = RoundedCornerShape(20.dp),
         singleLine = true,
-
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Text,
             imeAction = ImeAction.Search
@@ -42,7 +47,6 @@ fun SearchBar(
             onSearch = {
                 onSearchTriggered()
                 focusManager.clearFocus() // Hide the keyboard
-
             }
         ),
         colors = TextFieldDefaults.colors(
