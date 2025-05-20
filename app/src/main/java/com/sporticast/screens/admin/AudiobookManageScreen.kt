@@ -131,7 +131,7 @@ colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFBB86FC))       
             OutlinedTextField(
                 value = chapterDuration,
                 onValueChange = { chapterDuration = it },
-                label = { Text("Thời lượng (giây)", color = Color.LightGray) },
+                label = { Text("Thời lượng (phút)", color = Color.LightGray) },
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = Color.White,

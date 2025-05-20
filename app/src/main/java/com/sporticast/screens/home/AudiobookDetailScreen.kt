@@ -291,7 +291,7 @@ fun TabChaptersContent(
     Column(modifier = Modifier.padding(16.dp)) {
         chapters.forEach { chapter ->
             Text(
-                text = "${chapter.title} (${chapter.duration})",
+                text = "${chapter.title} ",
                 color = Color.White,
                 fontSize = 18.sp,
                 modifier = Modifier
